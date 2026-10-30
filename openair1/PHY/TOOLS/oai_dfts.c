@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: LicenseRef-CSSL-1.0
  */
 
-#if defined(__x86_64__) || defined(__i386__)
+#if defined(__x86_64__) || defined(__i386__) || defined(__riscv)
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,7 +10,12 @@
 #include <math.h>
 #include <stddef.h>
 #include <complex.h>
+#if defined(__x86_64__) || defined(__i386__)
 #include <immintrin.h>
+#else
+/* Use SIMDe's scalar-compatible x86 aliases on RV64 without V. */
+#define SIMDE_ENABLE_NATIVE_ALIASES
+#endif
 #include "../sse_intrin.h"
 #include "assertions.h"
 #define OAIDFTS_MAIN

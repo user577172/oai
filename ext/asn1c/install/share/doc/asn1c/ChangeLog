@@ -1,0 +1,1285 @@
+Changes since v1.5.3:
+	* Corrected the check-65 multi-tag BER fixture: two binary REAL values
+	  omitted their mantissas and were rejected after the issue #585 fix.
+	  Use complete encodings and verify decoded values; retain missing-mantissa
+	  inputs as rejection cases and cover truncation and malformed wrappers.
+	* Fixed issue #586: retain unknown APER open-type payloads from extensible
+	  information-object sets in a generated, owned ANY alternative, allowing
+	  decode/modify/re-encode. Keep known alternatives' presence indices and
+	  validate identifier/value agreement on encode. Reject unknown identifiers
+	  in sealed sets. Correct optional open-type field declarations to match
+	  pointer metadata. Regenerate C with the matching runtime; see
+	  docs/issue-586-aper-unknown-open-type.md for framing and compatibility limits.
+	  Correct ANY copy/compare/print to use its own structure layout, and CHOICE copy
+	  to release a previous alternative safely when overwriting a populated value.
+	  Free discarded NULL-placeholder extension allocations during APER decoding.
+	  Added generated-code regressions and malformed/fragmented payload coverage.
+	  Design and integration review by Sol; runtime and tests by Luna.
+	* Fixed issue #585: BER binary REAL format 11 now consumes exactly the
+	  explicit exponent octet count, accepting X=1 and avoiding mantissa
+	  consumption for X=2/3. Reject missing exponents/mantissas and null result
+	  pointers; preserve the existing ERANGE limit for X >= 4. Added raw and
+	  NativeReal BER regressions, exact-buffer boundary checks, and a sweep of
+	  all explicit length octets. See docs/issue-585-real-exponent.md for the
+	  standards interpretation, permissive decoding scope, and validation.
+	  Design and integration review by Sol; regression implementation by Luna.
+	* Added transparent BER, DER, CER, and XER handling for SET extension
+	  addition groups. Group leaves remain in a nested C allocation but encode
+	  as independent members of the enclosing SET, with global canonical SET
+	  ordering and required-member checks. CER applies the encoder's bounded
+	  work, depth, element, and scratch limits while collecting flattened
+	  members. Canonical XER sorts root members by their minimum effective tag,
+	  then writes extension additions in textual order. It materializes grouped
+	  DEFAULT members only when their group is present; ordinary SET defaults keep
+	  their normal handling. Recursive SET XER decoding honors the configured
+	  stack bound. The generated synthetic group is now a SET with
+	  its own presence bitmap and mandatory mask, so regenerate generated C and
+	  use the matching runtime.
+	  SET extension-group PER support remains unavailable. The compiler also
+	  restores trailing roots after a second ellipsis before tag assignment; the
+	  31-set-of golden output covers this case. See docs/set-extension-groups.md.
+	  Follow-up to issue #583, reported by Ruud Schramp (@Schramp). Architecture,
+	  standards, and security review by Sol; runtime, test, fuzz, and documentation
+	  implementation by Luna.
+	* Fixed issues #582, #583 and #584 after validation against ITU-T X.680,
+	  X.690, X.691 and X.693 (2021). Extensible FROM constraints now use the
+	  built-in effective PER alphabet while abstract alphabet validation
+	  separately enforces intersections, serial subtypes and EXCEPT. SEQUENCE
+	  extension addition groups use flat BER/DER/CER/XER components and flat
+	  automatic tags, retaining their C storage and PER open-type grouping.
+	  EXTENSIBILITY IMPLIED now adds the ENUMERATED extension marker in its
+	  defining module before numbering, including inline and imported types.
+	  Regenerate generated C with the matching runtime: the SEQUENCE descriptor
+	  interface has new group metadata. At that stage SET group encoding was
+	  unchanged; transparent SET groups are covered by the follow-up above.
+	  Reports by Ruud Schramp (@Schramp), cross-validated with the gambas-asn1
+	  C++ and Rust backends with Claude Code assistance. Architecture, standards
+	  and security review by asn1c maintainers with Codex/Sol; implementation,
+	  regression tests, fuzzing and documentation with Codex/Luna assistance.
+	* Security follow-up to #582-#584: fixed alphabet EXCEPT validation bypass,
+	  malformed/incomplete BER group handling, DER SEQUENCE recursion-depth
+	  cleanup and checked length accounting. Hardened OCTET STRING DER input
+	  validation, including absent nonempty storage, invalid BIT STRING unused
+	  bits and oversized lengths, and avoided null empty payload callbacks.
+	  Made generated UniversalString character assembly use unsigned shifts
+	  before validating high-bit input. Random string filling now respects PER
+	  alphabet maps and abstract constraints, checks allocation bounds, and
+	  preserves the prior value when bounded generation fails. Added malformed-
+	  input, split-input, golden-vector, allocation-failure and sanitizer/fuzzer
+	  coverage. See docs/issues-582-584-review.md for
+	  standards references, validation results and review limitations.
+	* Fixed the retagged-string randomized bundle's GCC UBSan failure when a
+	  valid empty UTF8String reached OCTET_STRING_compare with a null backing
+	  buffer. Empty comparisons/copies now avoid null C-library arguments;
+	  hardened the corresponding BIT STRING operations and invalid copy-size
+	  handling. Added deterministic empty tagged-string regressions alongside
+	  the randomized cases. CI failure reported by the repository maintainer;
+	  fixes and tests by asn1c maintainers with Codex/Luna assistance. This is
+	  follow-up to the #578/#581 review; original reports by Ruud Schramp
+	  (@Schramp).
+	* Documented a proposed incremental JER design, covering per-PDU framing,
+	  persistent typed decoding, limits, transactional sinks and split-input
+	  testing against X.697/ECMA-404. This entry describes a proposal, not a
+	  new streaming implementation. Motivated by issue #578 and PR #579 from
+	  Ruud Schramp (@Schramp); design by asn1c maintainers with Codex assistance.
+	* Verified the #578/#581 fixes against ITU-T X.680, X.690 and X.697
+	  (2021), X.690 Erratum 1, and ECMA-404. The standards review found a
+	  remaining fragment-validation gap in generated character-string aliases:
+	  their final all_tags entry can still be the character-string tag.
+	  Built-in component matching now enforces universal OCTET STRING tag 4
+	  (or BIT STRING tag 3) below effective explicit wrappers, preserving ANY
+	  and custom-operation behavior. Added alias-fragment regressions and
+	  the published X.690 "Jones" examples. Corrected check-25's invalid
+	  positive component tags while retaining all old tag forms as explicit
+	  negative mutations; also covered all four JSON whitespace characters.
+	  Standards review and follow-up correction by asn1c maintainers with
+	  Codex/Luna assistance; original reporter and patch-provider credits
+	  follow below.
+	* Fixed issue #578: the JER converter now retains every PDU in large
+	  concatenated inputs and checks decode failures instead of returning a
+	  partial value as success. Replaced seek-based whole-file sizing with
+	  checked stream buffering, including pipes; checked buffer growth and
+	  released retained input before processing another file. Shared converter
+	  handling now rejects read errors and impossible decoder consumption.
+	  Added generated converter regressions for large/small multi-PDU inputs and malformed
+	  input. Report and original PR #579 by Ruud Schramp (@Schramp), with
+	  investigation assisted by Claude Code; security hardening and extended
+	  tests by asn1c maintainers with Codex/Luna assistance.
+	* Fixed issue #581 and completed PR #580: BER string wrapper checks use
+	  the effective wire tag chain while fragment checks retain the descriptor's
+	  final all_tags tag. The original PR changed the fragment fallback too,
+	  accepting invalid VisibleString fragments and failing check-25 in all
+	  three C CI jobs. Preserved that rejection test and added effective-tag,
+	  malformed-fragment, generated-alias and randomized-string coverage.
+	  Credits: Ruud Schramp (@Schramp) for issue #581 and its correct patch;
+	  javier (@mr-j0nes) for PR #580 and the original skeleton regression;
+	  asn1c maintainers with Codex/Luna assistance for security corrections
+	  and extended regression coverage. See docs/issues-578-581-security-review.md.
+	* Fixed PER security-review regressions in native unsigned 64-bit ranges:
+	  APER/UPER now interpret both signed metadata slots as unsigned when the
+	  type uses unsigned native storage, validate the complete range, and
+	  reject invalid offsets before addition. Bounds above INTMAX_MAX work
+	  without wrapping. Restored arbitrary-precision INTEGER (0..MAX)
+	  decoding; native storage conversion still rejects values that do not fit.
+	  Removed signed overflow in the APER encoder's full-range size calculation.
+	  Added sanitized boundary, malformed/truncated-input and native-overflow
+	  regressions, and generated uint64 coverage in the single-flavor smoke test.
+	  Split PER INTEGER entry points into documented, bounded helpers, with
+	  argument validation and checked fragmented-buffer growth.
+	* Fixed builds generated with -no-gen-UPER (APER only). The PER range
+	  helpers per_{long,imax,umax}_range_{rebase,unrebase}() used by both
+	  INTEGER_aper.c and INTEGER_uper.c were defined only in uper_support.[ch],
+	  which asn1c emits for the CODEC-UPER section alone. APER-only projects
+	  therefore failed to compile with "call to undeclared function". The
+	  helpers now live in per_support.[ch], which both CODEC-UPER and
+	  CODEC-APER emit. -no-gen-UPER/-no-gen-APER still omit every file of
+	  the disabled flavor. Added the check-PER-single-flavor.sh smoke test.
+	  It builds APER-only and UPER-only converters, checks that no file of the
+	  disabled flavor is emitted, round-trips constrained INTEGERs and checks
+	  that the bytes match a combined build. This fixes the 17 asn1c-smoke
+	  failures.
+	* Added a strict C CER decoder, cer_decode(), which runs ber_decode(),
+	  re-encodes the value with cer_encode(), and rejects input (EBADF) that
+	  is not byte-identical to the consumed TLV. asn_decode(ATS_CER) and the
+	  generated converter's -icer now use it; ATS_BER and ATS_DER remain
+	  permissive. -icer requires CER generation, is rejected under
+	  -no-gen-CER, and buffers the whole input. ASN_DISABLE_BER_SUPPORT or
+	  ASN_DISABLE_CER_SUPPORT builds a stub failing with ENOENT. The Rust
+	  runtime adds strict decode_boolean_cer, decode_null_cer, and
+	  decode_integer_cer, and generated Rust types emit decode_cer alongside
+	  encode_cer whenever CER is selected. Added skeleton, smoke, and Rust
+	  runtime/interop regressions, including live C-generated CER vectors.
+	* Skip unused randomized corpus generation when LibFuzzer is disabled.
+	  Added GENERATE_CORPUS=auto/yes/no and a local-only check-corpus target
+	  that splits bundles into parallel cases without timed fuzzing. Inner
+	  builds share the caller's job budget. Corpus/fuzz success markers are
+	  separate, and policy/failure regressions run in the ordinary checks.
+	* Corrected CER restricted-character-string fragments to use universal
+	  OCTET STRING tags, preserving the outer string type tag. BER decoding
+	  no longer accepts a character-type tag in a nested OCTET STRING-only
+	  fragment position. Restored legacy opaque ANY container compatibility
+	  without removing parent-length, nesting, or EOC validation. Added fixed
+	  byte-vector and malformed/streaming regressions for generated C tests
+	  25, 60, and 62; randomized corruption coverage is retained.
+	  All 71 generated C checks and 52 linked skeleton checks pass, along
+	  with CER codec-disable variants and Rust/C interoperability checks.
+	* Added --rust as a complete output mode with native safe Rust UPER
+	  encode/decode and CER encoding for BOOLEAN, NULL, and finite
+	  nonextensible INTEGER ranges fitting i64. Generated Cargo packages use
+	  a dependency-free Rust runtime. Rust CER is encode-only; other Rust
+	  codecs and ASN.1 type families remain incremental conversion work.
+	* Added a native descriptor-driven C CER encoder, exposed through
+	  cer_encode(), the generic ATS_CER encoder, and generated converter
+	  output. C CER support is enabled by default with BER dependencies. CER
+	  input still uses permissive BER decoding. Added string fragmentation,
+	  constructed values, SET/SET OF ordering, malformed-input, and converter
+	  regression coverage. Primitive content capture uses a single intrinsic tag;
+	  the descriptor walker reapplies wrappers under the configurable tag-chain
+	  limit. Existing BER corpora also feed decoded values to generic CER encoding
+	  in randomized tests; this is not a long fuzz run.
+	* Extended BER-family CER input handling for explicit/named wrappers,
+	  natural-tag string fragments, and definite constructed BER children for
+	  covered tagged scalar forms. Validated NativeInteger width/sign metadata
+	  while preserving default native storage and DEFAULT omission. Mixed lengths
+	  among nested constructed scalar wrappers remain limited by the existing
+	  BER tag-chain path. The corrected encoder passes the linked skeleton suite
+	  (52/52), and the Rust harness passes all 10 conformance checks with C parity.
+	  A short ASan/UBSan run passes 660,325 mutations. The generated CER converter
+	  script, all 28 generated smoke tests, and installed-toolchain qualification
+	  pass.
+	* Documented the proposed first stage of Rust conversion: an opt-in Rust
+	  generation backend, a safe Rust runtime for all current codec families,
+	  test migration, and supervised implementation milestones. This change
+	  initially added planning documentation; the first implementation is
+	  described above.
+	* Fixed an assertion when parsing nested constrained SEQUENCE OF and SET OF
+	  types. Element constraints now pass through nested collections while SIZE
+	  constraints remain attached to their collections. Added issue #575 coverage.
+	* Constraint checks now enforce SIZE bounds on constrained SEQUENCE OF and
+	  SET OF values, including collections nested in other types. The generated
+	  checker still validates each element. Added issue #570 regression coverage.
+	* The contents constraint (BIT STRING (CONTAINING Type), X.682 clause 11)
+	  is no longer ignored. The generated constraint check (-c) rejects
+	  content that does not decode as Type using the selected transfer syntax
+	  (BER by default), and the random generator (-R) encodes a random Type
+	  value using the selected output syntax. Adds syntax-aware variants of
+	  the constraint-checking and random-fill APIs, and the contained_type
+	  field of asn_encoding_constraints_t. OCTET STRING (CONTAINING Type) is
+	  not yet covered. Added issue #569 regression coverage.
+	* Fixed default tag-mode resolution for tagged SEQUENCE OF and SET OF
+	  elements. References to already-tagged CHOICE types now use IMPLICIT
+	  tagging, as required by X.680:2021 §31.2.7. Added issue #566 regression
+	  coverage for normalized ASN.1 and generated member descriptors.
+	* Corrected primitive runtime file dependencies for BER, XER, and JER when
+	  using -fgen-only-pdu-deps, so generated projects include required shared
+	  codec helpers. Added isolated dependency-generation regression coverage.
+	* BER SEQUENCE decoding now rejects a first unknown extension addition
+	  whose tag duplicates a trailing OPTIONAL or DEFAULT root component tag,
+	  as required by X.680:2021 §§25.6 and 52.7. Added issue #213 regression
+	  coverage.
+	* Added a repository code-review guide for contributors.
+
+v1.5.3: 2026-10-07
+	* Corrected IMPORTS resolution and diagnostics. Explicitly imported names
+	  resolve from the module named by FROM; -fprefer-import-source disables
+	  the legacy whole-module fallback. Duplicate module references are
+	  diagnosed, OID equality checks avoid treating name-form arcs as numbers,
+	  parameterized imported types avoid spurious diagnostics, and all FATAL
+	  diagnostics produce a non-zero exit status. Added compiler regression
+	  coverage (PR #560 follow-up).
+	* Fixed PER extensibility handling for information-object identifier fields
+	  governed by object sets and for component-relation constraints. Recovery
+	  is limited to table-only constraints where appropriate. Added UPER and
+	  APER regression coverage for issue #563 (PR #564).
+	* Fixed a parallel uninstall race in the skeleton build that could cause
+	  make distcheck to fail (PR #564).
+	* Prevented generated filenames from colliding with skeleton files on
+	  case-insensitive filesystems by disambiguating matching names with an
+	  asn1c_ prefix. Added a smoke test and documentation.
+	* Moved constraint enums to file scope and made asn1p_constr.h
+	  self-contained, so C++-based code analyzers can parse the declarations.
+	* Updated and regenerated the usage guide and man page to match current
+	  behavior, including the transfer-syntax API table and groff rendering.
+	  Added Markdown lint and VS Code workspace settings.
+
+Changes since v1.5.0:
+	* Made the generated-constraint warning regression test compatible with
+	  Automake's standard top_srcdir/top_builddir test environment.
+	* Avoided redundant parentheses around standalone equality comparisons in
+	  generated constraint checks, preventing Clang's -Wparentheses-equality
+	  warning while retaining required grouping for compound expressions.
+	* Hardened APER open-type decoding against undefined NULL-pointer arithmetic
+	  when malformed input begins with a zero-length chunk.  Regression coverage
+	  now exercises the corresponding aligned-PER vector in check-126.
+	  Fix suggested by <shakespark@gmail.com> in <https://github.com/vlm/asn1c/pull/551>.
+	* Generalized generated OER, UPER, and APER descriptor constraint-table
+	  inheritance for typedef aliases by deriving codec slots from the terminal
+	  ASN.1 type.
+	  Issue #552, reported by @zhouvlia, was already avoided for ENUMERATED aliases
+	  by an earlier enum-specific branch in this fork; the new terminal-type rule
+	  covers the remaining alias classes and the added UPER/APER regression locks
+	  in the reported behavior and truncation safety.
+	* Corrected generated UPER/APER CHOICE maps so conversions between declaration
+	  order and canonical order use the right direction. Added canonical-order
+	  regression coverage in check-561. Fix in PR #562, included in v1.5.2.
+	  Problem and fix provided by Ruud Schramp.
+	IMPORTANT UPGRADE NOTICE:
+	* Decoding behavior for unknown extensions has changed from "fail" to
+	  "skip/relay". Evaluate the impact on your application before upgrading;
+	  define ASN_REJECT_UNKNOWN_EXTENSIONS when compiling the decoder skeletons
+	  to restore the previous strict behavior. This change can affect input-
+	  validation gates and protocol state machines that treated RC_FAIL as a
+	  protocol error.
+	  Compatibility warning contributed by <shakespark@gmail.com>.
+
+	INTEROPERABILITY FIXES (vlm/asn1c PRs #539-#548 and #550):
+	* Co-authored-by: libo <shakespark@gmail.com>
+	* The original fixes were authored by @shakespark (this notice is placed
+	  here upon his request).
+	* Ported vlm/asn1c PR #550 so generated permitted-alphabet constraint
+	  checks accept a buffer-less empty string without NULL-pointer arithmetic
+	  and deterministically reject malformed values whose buffer is NULL while
+	  their size is non-zero. Runtime regression coverage exercises both empty
+	  representations plus malformed, in-alphabet, and out-of-alphabet values;
+	  generated permitted-alphabet helpers now include complete doc-blocks.
+	* Corrected UPER known-multiplier character strings with extensible SIZE
+	  constraints to retain their effective permitted-alphabet width outside
+	  the size root, as required by X.691:2021 sections 30.4 and 30.5.2.
+	  Also corrected the section 30.5.4 direct-value boundary, supported
+	  zero-bit single-character alphabets, and rejected length arithmetic
+	  overflow before allocation. Regression test 550 covers exact root and
+	  extension encodings, round trips, malformed alphabet values, forward
+	  decoding, empty strings, and a following-field cursor check.
+	* Corrected UPER/OER forward-compatible handling of unknown CHOICE and
+	  ENUMERATED extensions, including lossless ENUMERATED relay and the
+	  optional ASN_REJECT_UNKNOWN_EXTENSIONS strict compatibility mode.
+	* Corrected UPER normally-small long-form encoding, extensible constraint
+	  construction, DEFAULT extension omission, SET canonical ordering, and
+	  ENUMERATED automatic numbering/map layout.
+	* Corrected OER open-type skipping to consume both its length determinant
+	  and content, and added regression schemas and runtime tests for malformed,
+	  truncated, boundary, cross-version, and canonical-encoding cases.
+	* PR #539's 24-bit open-type skip defect was not present in this fork: its
+	  existing bit-at-a-time skipper already consumed every payload length. The
+	  upstream regression test was retained to lock in that behavior.
+	* Fixed codec-disabled builds of NativeEnumerated by applying the UPER
+	  extension-range consistency check only when the UPER limit constant is
+	  available. This restores the all-codecs-disabled smoke-test variant.
+	* Fixed generated UPER projects to include constr_SET_uper.c, and hardened
+	  non-empty SET OF / SEQUENCE OF decoding against missing element codecs.
+	  Empty collections remain valid because they do not invoke an element
+	  codec.
+	* Corrected PER-visible extensible SIZE roots so named extension additions
+	  are excluded from the root while remaining accepted by runtime constraint
+	  checks. Plain BIT STRING values below an extensible root are encoded as
+	  extensions instead of being padded into a different abstract value.
+	* Routed NamedBitList-specific BIT STRING descriptors through top-level
+	  aliases and inline members, including compound-name output, while plain
+	  BIT STRING values continue to preserve trailing zero bits.
+
+	SECURITY FIXES:
+	* Hardened APER constrained INTEGER decoding for ranges wider than 16 bits.
+	  The decoder now rejects constraint metadata wider than its uintmax_t
+	  accumulator and invalid values from the rounded constrained length
+	  determinant before alignment or payload consumption.  Offset accumulation
+	  remains unsigned and checks for shift overflow, preventing signed-shift
+	  undefined behavior and over-long encodings that could desynchronize later
+	  fields.  Added regression coverage for the reported 33-bit/8-octet input
+	  and the 64-bit boundary path.
+	* Hardened variable-size JER BIT STRING decoding.  The decoder now requires
+	  the X.697 "value" and "length" members exactly once, rejects unknown or
+	  trailing members, and does not assign a first- or last-member winner to
+	  duplicate JSON names.  This prevents duplicate-member parser differentials
+	  from silently changing the decoded bit string across implementations.
+	  X.697 clause 24.3 defines the two required members but does not define a
+	  duplicate-name resolution rule; RFC 8259 section 4 recommends unique names
+	  and documents duplicate-name behavior as unpredictable.
+	* Fixed generated OPEN TYPE selector code for Information Object Sets
+	  whose rows define the selected open type but omit the constraining
+	  key field.  The generated selector now validates both the constraining
+	  cell and selected type cell before dereferencing type descriptors or
+	  compare callbacks, preventing NULL dereferences on malicious input.
+	  OPEN TYPE encoder and printer paths were also hardened to reject NULL
+	  selected descriptors before debug logging, encoding, or printing.
+	  Regression test 211 now covers the crash packet pattern and
+	  BER/DER/OER/UPER/APER/XER/JER/CBOR round trips plus plaintext
+	  printing through the same selector edge case.
+	  (Severity: high; Security impact: low)
+	* Hardened CVE-2025-32893 handling for parameterized Information Object
+	  Sets by safely comparing VALUESET constraint references without
+	  dereferencing optional constraint fields, and added regression test 212
+	  to verify distinct value sets produce distinct open-type validation.
+	  (Severity: medium; Security impact: medium)
+	* Fixed CBOR unknown-field skipping so recursive arrays, maps, and tags
+	  are covered by the decoder stack limit.  SEQUENCE and SET decoders use
+	  the new cbor_skip_item_with_ctx() helper when skipping unknown CBOR
+	  map values; the original cbor_skip_item() remains as a compatibility
+	  wrapper for callers without decoder context.  Added check-CBOR
+	  regression coverage for deeply nested tag wrappers.
+	  (Severity: medium; Security impact: low)
+	* Fixed BER CHOICE decoding infinite loop on malformed indefinite-length
+	  end-of-contents (CWE-835, DoS on attacker-controlled input).  A leading
+	  0x00 byte followed by a non-zero byte fell through an unhandled branch
+	  in constr_CHOICE_ber.c without returning or advancing the buffer,
+	  causing the decoder to spin forever.  The missing branch now returns
+	  RC_FAIL, matching constr_SEQUENCE_ber.c / constr_SET_ber.c /
+	  constr_SET_OF_ber.c behavior.  Added regression test
+	  (203-ber-indef-loop-OK.asn1, check-203.c) covering all four
+	  indefinite-length BER decoders, plus a libFuzzer harness and seed
+	  corpus (data-203).  Ported from upstream vlm/asn1c PR #518; originally
+	  reported by John Bradley (Credex).
+	  (Severity: high; Security impact: low)
+
+	FIXES:
+	* Reduced randomized sanitizer CI compile time by applying each case's
+	  ASN1_TEXT definition only to random-test-driver.o. Shared generated codec
+	  objects now have stable command lines that ccache can reuse across bundle
+	  cases. Standard CI explicitly disables the opt-in LibFuzzer mode and caps
+	  every ordinary CI job, as well as each make-check step, at 40 minutes.
+	* Restored the X.691 section 13.2.6 constrained length determinant
+	  for APER constrained INTEGER values whose range is greater than
+	  65536.  A previous fix for wide INTEGER constraint handling changed
+	  this path to the general APER length determinant, producing and
+	  expecting non-conformant encodings such as 01 20 instead of 00 20
+	  for INTEGER (0..4294967295) ::= 32.  The decoder and encoder now
+	  use the constrained len-1 bit field followed by octet alignment
+	  while preserving the unsigned offset accumulation and negative lower
+	  bound checks needed for 64-bit ranges.
+	* Fixed tests/tests-asn1c-compiler subdirectory checks so they build
+	  asn1c before running scripts that invoke it.  This prevents
+	  check-parsing.sh from comparing references against empty output when
+	  the compiler has not already been built by a top-level make.
+	* Fixed Darwin libtool configuration when `sysctl -n kern.argmax` is
+	  denied by the host environment.  configure now seeds libtool's command
+	  line length cache from `getconf ARG_MAX`, avoiding empty max_cmd_len
+	  values and noisy "integer expression expected" diagnostics while
+	  linking skeleton archives.
+	* Ported upstream OPEN TYPE and option validation fixes.  Decoders now
+	  reject information object rows whose selector has no type descriptor
+	  instead of dereferencing NULL, and OER OPEN TYPE failure cleanup resets
+	  the OPEN TYPE CHOICE wrapper instead of using the selected primitive
+	  type size.  Added regression test 211 for typeless information object
+	  rows and truncated OPEN TYPE payloads.  The compiler now rejects
+	  -fno-constraints with -gen-OER, -gen-UPER, or -gen-APER because those
+	  encoders/decoders require constraint metadata.
+	* Fixed additional fuzzer-discovered decoder issues:
+	  - JER BIT STRING now rejects invalid length metadata instead of
+	    accepting lengths larger than the decoded bit buffer or with more
+	    than seven unused bits.
+	  - APER SEQUENCE frees extension presence maps on starvation paths.
+	  - APER NativeReal and OCTET STRING reject malformed length/range
+	    cases found by fuzzing.
+	  - JER and XER SET OF decoding now treats zero-progress member decodes
+	    as failure, preventing loops on malformed input.
+	  - The JER decoder and randomized/fuzzer test runners now handle
+	    malformed or truncated inputs without writing discoveries back into
+	    source-tree corpora.
+	* Fixed XER OCTET STRING entity-reference handling so Unicode U+0000 is
+	  accepted while out-of-range and surrogate numeric character references
+	  fail cleanly with a terminated working buffer.
+	* Keyed the single definition of `asn_debug_indent` in asn_internal.c
+	  off a macro (ASN__DEBUG_INDENT_NEEDS_DEFINITION) set by asn_internal.h
+	  under exactly the configuration which declares the variable extern.
+	  Previously the definition's guard did not account for an external
+	  ASN_DEBUG override, so building with -DASN_EMIT_DEBUG=1 plus a custom
+	  -DASN_DEBUG=... failed to compile asn_internal.c.  Aligned with
+	  upstream vlm/asn1c PR #520.
+	* tests: instrument generated codec libraries with libFuzzer coverage
+	  counters (-fsanitize=fuzzer-no-link) so fuzzing gets feedback from the
+	  ASN.1 codec itself, and seed fuzzer runs from a scratch corpus copy so
+	  discoveries are not written back into the source tree.  Ported from
+	  upstream vlm/asn1c PR #518.
+
+	NEW FEATURES:
+	* Added schema-level XER/JER encoding instruction support for the
+	  implemented subset of X.693/X.697-style controls.  The parser now
+	  accepts `JER INSTRUCTIONS`, `[TEXT]`, `[XER:TEXT]`, `[DECIMAL]`,
+	  `[XER:DECIMAL]`, `[JER:BASE64]`, `ENCODING-CONTROL XER` directives
+	  for `TEXT`, `DECIMAL`, and `GLOBAL-DEFAULTS MODIFIED-ENCODINGS`, and
+	  `ENCODING-CONTROL JER` directives for `BASE64`, enumerated-value
+	  `TEXT AS`, and member `NAME AS`.
+	  - Added semantic validation for target applicability, unknown targets,
+	    required `AS` values, XER `DECIMAL` requiring
+	    `GLOBAL-DEFAULTS MODIFIED-ENCODINGS`, and duplicate JER wire names.
+	  - Added generated XER text wrappers for BOOLEAN, ENUMERATED,
+	    named-number INTEGER, and named-bit BIT STRING; XER decimal REAL
+	    routing; JER Base64 OCTET STRING wrappers; and JER member wire-name
+	    metadata used by SEQUENCE, SET, and CHOICE encoders/decoders.
+	  - Preserved compatibility for bare `[BASE64]` as XER and the legacy
+	    XER OCTET STRING `hexadecimal`, `base64`, and `utf8` control forms.
+	  - Added compiler golden and smoke tests covering allowed forms, bad
+	    values, bad applicability, exact XER/JER output, JER round trips, and
+	    JER bad-wire failures.
+	* Added `-fprefer-import-source` compiler flag.  When two modules export
+	  identically-named types and a consumer imports one from each,
+	  `asn1f_lookup_in_imports` previously fell back to a full-module body
+	  scan and silently bound to the wrong module's definition.  With
+	  `-fprefer-import-source` the resolver only accepts an explicit
+	  IMPORTS-list match, eliminating the ambiguity.  The fix also corrects
+	  flag propagation through `_ex` wrapper functions and across the
+	  `memset` that clears `a1f_replace_me_with_proper_interface_arg`, so
+	  compiler-phase lookups now correctly inherit caller-supplied flags.
+
+1.3.6:
+	FIXES:
+	* Initialize `char ch` before taking its address in
+	  asn_codecs_prim_xer.c and asn_codecs_prim_jer.c to silence
+	  clang -Werror,-Wuninitialized-const-pointer. Reported by ur20980.
+
+1.3.5:
+	FIXES:
+	* Prevent unsigned underflow in APER constrained INTEGER decoding when
+	  reading length-octets for ranges wider than 16 bits. The decoder now
+	  rejects zero-length determinants and avoids size_t wraparound flagged
+	  by UBSan on macOS builds. Reported by mouse07410.
+	* Fixed check-fprefix-link.sh smoke test to ensure proper option
+	  ordering for macOS compatibility. The test now places all command-line
+	  options before the input file, avoiding POSIX getopt() behavior where
+	  option processing stops at the first non-option argument.
+
+1.3.4:
+	NEW FEATURES:
+	* Added CBOR tag support (RFC 8949 §3.4, major type 6).
+	  - All CBOR decoders are now tag-transparent: any number of leading
+	    tag headers are silently skipped before decoding the underlying
+	    value.  Tagged data from external producers (self-described CBOR
+	    tag 55799, epoch timestamps tag 1, URI hints tag 32, etc.) is
+	    accepted without application-level changes.
+	  - New cbor_skip_tags() helper in cbor_support.[ch] peels off
+	    consecutive leading CBOR tag headers from a raw buffer.
+	  - Added well-known CBOR tag constants to cbor_support.h:
+	    CBOR_TAG_DATETIME_STRING (0), CBOR_TAG_EPOCH_DATETIME (1),
+	    CBOR_TAG_DECIMAL_FRACTION (4), CBOR_TAG_BIGFLOAT (5),
+	    CBOR_TAG_BASE64URL (21), CBOR_TAG_BASE64 (22), CBOR_TAG_BASE16 (23),
+	    CBOR_TAG_ENCODED_CBOR (24), CBOR_TAG_URI (32), CBOR_TAG_REGEX (35),
+	    CBOR_TAG_UUID (37), CBOR_TAG_NETWORK_ADDR (260),
+	    CBOR_TAG_SELF_DESCRIBED (55799).
+	  - Extended check-CBOR test suite with comprehensive tag tests:
+	    cbor_encode_tag() output verification, cbor_skip_tags() unit tests,
+	    tag-transparent decode tests for INTEGER, OCTET STRING, NativeInteger,
+	    and BIT STRING types, and nested multi-tag decode tests.
+	  - Updated asn1c-usage.tex: added "CBOR Tags" API section documenting
+	    encoding with cbor_encode_tag(), tag-transparent decoding, and
+	    bignum tags. Added IANA CBOR Tags Registry reference.
+	    Updated CBOR references from RFC 7049 to RFC 8949 (successor).
+	  - Updated asn1c.man.md: added CBOR TAGS section and updated RFC
+	    reference from RFC 7049 to RFC 8949.
+	FIXES:
+	* Fixed generated filename collisions with system headers on
+	  case-insensitive filesystems (notably macOS/Windows). ASN.1 types
+	  whose generated filenames match common system headers are now
+	  disambiguated automatically (e.g., Time.h -> asn1c_time.h),
+	  preventing accidental inclusion of generated headers when source
+	  files include <time.h>. Added smoke-test coverage for the Time case.
+
+1.3.3:
+	NEW FEATURES:
+	* Added complete CBOR (Concise Binary Object Representation, RFC 7049)
+	  codec support. CBOR generation is enabled by default; use -no-gen-CBOR
+	  to disable. New skeleton files: cbor_encoder.[ch], cbor_decoder.[ch],
+	  cbor_support.[ch], INTEGER_cbor.c, NativeInteger_cbor.c,
+	  OCTET_STRING_cbor.c, BIT_STRING_cbor.c, BOOLEAN_cbor.c, NULL_cbor.c,
+	  ENUMERATED_cbor.c, NativeEnumerated_cbor.c, REAL_cbor.c,
+	  NativeReal_cbor.c, constr_SEQUENCE_cbor.c, constr_SEQUENCE_OF_cbor.c,
+	  constr_SET_cbor.c, constr_SET_OF_cbor.c, constr_CHOICE_cbor.c,
+	  asn_codecs_prim_cbor.c. The SEQUENCE encoder correctly skips absent
+	  optional and default-valued members so the CBOR map header count always
+	  matches the number of encoded key/value pairs. INTEGER decoding handles
+	  CBOR bignum tags (2 and 3) for values exceeding the 64-bit signed range.
+	  New test: tests/tests-skeletons/check-CBOR.c with edge-case coverage for
+	  INTEGER, NativeInteger, BIT STRING, and OCTET STRING types.
+	* Added ATS_CBOR to asn_transfer_syntax enum and wired CBOR encode/decode
+	  into asn_encode()/asn_decode() dispatch in asn_application.c. Added
+	  -icbor and -ocbor switches to converter-example.c so that generated
+	  converter applications can read and write CBOR-encoded data.
+
+1.3.2:
+	FIXES:
+	* Fixed incorrect type descriptor selection when the same member name appears
+	  in different parent types with different type definitions. When embedded types
+	  like ssb-PositionsInBurst appeared as CHOICE in one parent and SEQUENCE in
+	  another, the decoder would incorrectly use the wrong type descriptor due to
+	  unsuffixed alias collisions at runtime. The fix ensures member table references
+	  always use suffixed type descriptors for embedded constructed types, avoiding
+	  ambiguity. Affects 3GPP RRC and similar specifications with duplicate member
+	  names across different parent structures.
+	  (Severity: high; Security impact: none)
+	* Moved complex_threshold from global variable to arg_t structure field.
+	  Applications linking to libasn1compiler no longer need to define their own
+	  version of the global complex_threshold variable. The variable is now properly
+	  encapsulated within the compiler's argument structure and passed through the
+	  asn1_compile() function. Default threshold value remains 4. Added test case
+	  for -fcomplex-threshold flag validation.
+	  (Severity: low; Security impact: none)
+	* Fixed JER OPEN TYPE decoder to comply with ITU-T X.697 Clause 41. The decoder
+	  was incorrectly attempting to parse CHOICE-style key wrappers and consuming
+	  parent SEQUENCE delimiters, causing "Unexpected JSON key" and "Out of defined
+	  members" errors when decoding valid ITU-T X.697 compliant JSON. The decoder now
+	  decodes OPEN TYPE values directly without wrapper parsing and returns immediately
+	  without consuming trailing delimiters, letting parent decoders handle structural
+	  elements. Added automated regression test to prevent future issues. Affects F1AP
+	  and similar specifications with OPEN TYPE fields. (PR #456)
+	  (Severity: high; Security impact: none)
+
+1.3.1:
+	FEATURES:
+	* Enhanced -fprefix implementation with automatic PDU handling and system
+	  header conflict warnings. (PR #427)
+	* Added warning system to detect filename conflicts with system headers on
+	  case-insensitive filesystems. (PR #425)
+
+	NOTABLE:
+	* Added S1AP missing ASN.1 file to examples. (PR #423)
+
+	FIXES:
+	* Improved JER OPEN_TYPE encoder validation and diagnostics. Added comprehensive
+	  checks for type descriptor validity, NULL pointer detection, and type mismatch
+	  warnings. Enhanced debug logging to help diagnose encoding issues in complex
+	  IOC scenarios. (Severity: low; Security impact: none)
+	* Fixed name collision for nested CHOICE/SET members with identical identifiers.
+	  When the same identifier appears recursively in nested CHOICE or SET structures
+	  (e.g., "criticalExtensions" used at multiple nesting levels in 3GPP RRC schemas),
+	  the compiler now automatically applies compound naming to prevent collisions.
+	  This fixes UPER decoding failures in 3GPP WCDMA RRC and similar schemas.
+	  (Severity: high; Security impact: none)
+	* Fixed JER Open Type encoding to comply with ITU-T X.697 Clause 41 - removed
+	  incorrect type name wrapper. (PR #444) (Severity: medium; Security impact: none)
+	* Fixed SEQUENCE OF with inline SEQUENCE inside CHOICE generating undefined
+	  types. (PR #442) (Severity: high; Security impact: none)
+	* Fixed linker errors from duplicate unsuffixed type descriptor symbols on
+	  non-ELF platforms (CYGWIN, Windows). (PR #439) (Severity: high; Security impact: none)
+	* Fixed duplicate validation function names for nested ENUMERATEDs with
+	  identical identifiers. (PR #436) (Severity: high; Security impact: none)
+	* Fixed parser memory leak on syntax error. (PR #434) (Severity: low; Security impact: low)
+	* Fixed memory leak in parser when processing unused tokens. (PR #433)
+	  (Severity: low; Security impact: low)
+	* Fixed code generation for deeply nested SEQUENCE OF with compound names.
+	  (PR #432) (Severity: medium; Security impact: none)
+	* Fixed XER Base64 decoder state loss in chunked decoding. (PR #430)
+	  (Severity: medium; Security impact: none)
+	* Fixed time.h shadowing on case-insensitive filesystems (macOS, Windows) by
+	  moving include to header files. (PR #425) (Severity: medium; Security impact: none)
+	* Fixed XER encoder indentation and empty element spacing issues. (PR #420)
+	  (Severity: low; Security impact: none)
+	* Fixed unused variable 'er' in OPEN_TYPE_jer.c that caused compilation
+	  failure with -Werror -Wall flags. (Severity: low; Security impact: none)
+
+1.3.0:
+	FEATURES:
+	* Added compile-time flag XER_ALLOW_EMPTY_OPTIONALS for XER decoder support
+	  of empty OPTIONAL fields. (PR #416)
+	* Added -fcomplex-threshold CLI parameter to control XER encoding complexity
+	  and fixed related XER encoding issues. (PR #399)
+	* Added -fprefix option to prefix generated type names. (PR #170)
+	* Completed ENCODING-CONTROL Phases 4-5: full parsing of ENCODING-CONTROL
+	  directive bodies and linking encoding instructions to target type
+	  definitions. (PR #389)
+	* Added JER-specific constraints for BIT STRING variable size. (PR #192)
+	* Added JER support for pure hexadecimal OCTET STRINGs. (PR #193)
+	* Added class default syntax support. (PR #172)
+	* Added copy operation support. (PR #174)
+
+	NOTABLE:
+	* Reverted circular dependency detection changes from PRs #409 and #411,
+	  preserved F1AP regression test. (PR #414)
+	* Updated asn1c-usage.tex documentation for PRs #399, #389, #353, #336, #334.
+	  (PR #412)
+	* Updated README with supported encoding rules. (PR #173)
+	* Breaking change introduced by circular dependency handling refactor in
+	  PR #409 (later reverted in PR #414): many generated structures were
+	  temporarily represented as pointers, requiring updates to existing code
+	  (for example, adding dereferences) to compile and link it with the
+	  current asn1c. This entry documents the temporary impact for users who
+	  upgraded during that period.
+
+	FIXES:
+	* Fixed IOC constraint resolution for SEQUENCE OF with parent field references.
+	  (PR #415) (Severity: medium; Security impact: none)
+	* Fixed Open Type code generation for SEQUENCE OF in IEEE 1609.2. (PR #408)
+	  (Severity: medium; Security impact: none)
+	* Fixed F1AP circular dependency using -findirect-choice flag for IOC OPEN_TYPE
+	  pointer generation. (PR #353) (Severity: medium; Security impact: none)
+	* Fixed -fgen-only-pdu-deps to mark IOC table types and parameterized type
+	  dependencies. (PR #336) (Severity: low; Security impact: none)
+	* Fixed XER parsing for OCTET STRING with H'...' prefix notation. (PR #334)
+	  (Severity: low; Security impact: none)
+	* Fixed -Wsign-compare compiler warning in BIT_STRING_jer. (PR #200)
+	  (Severity: low; Security impact: none)
+	* Fixed version brackets in CHOICE type. (PR #199)
+	  (Severity: low; Security impact: none)
+	* Fixed format specifiers for 64-bit integers. (PR #185)
+	  (Severity: low; Security impact: none)
+	* Fixed integer tests warnings. (PR #182)
+	  (Severity: low; Security impact: none)
+	* Fixed GCC warnings. (PR #181)
+	  (Severity: low; Security impact: none)
+	* Fixed JER OBJECT IDENTIFIER quotes handling. (PR #178)
+	  (Severity: low; Security impact: none)
+	* Fixed INTEGER to 64-bit native methods conversion. (PR #177)
+	  (Severity: low; Security impact: none)
+	* Fixed APER INTEGER longs to intmaxs conversion. (PR #176)
+	  (Severity: low; Security impact: none)
+
+1.2.0:
+	FEATURES:
+	* Added support for OPEN TYPE in IOC, now V2X and C2X should work.
+	* Added support for JER encoding and decoding.
+	* Added ability to generate only codecs relevant to selected PDU(s)
+
+	NOTABLE:
+	* OCTET STRING in XER now uses Base64 encoding, CXER-compliant.
+	* Hexadecimal encoding for OCTET STRING in XER may or may not work.
+	* Validation of constraints should now work for all types.
+
+	FIXES:
+	* Numeral - addressed bugs and compiler warnings.
+
+0.9.40:
+    FEATURES:
+    * Added support for basic Information Object Sets driven code generation.
+    * Added OER support.
+    * Added LTE RRC example (Bi-Ruei, Chiu).
+    * Added IEEE 1609.2 example.
+    * Added SAE J2735 example.
+
+    NOTABLE:
+    * Converter example (included by default):
+      * converter-sample.c renamed into converter-example.c
+      * make converter-example.mk file for building that converter
+      * asn1c -no-gen-example to stop generating converter-example.{c,mk}
+    * asn1c -no-gen-example option to disable converter-example generation.
+    * Added random value generation (-R option to converter-example).
+    * Added LibFuzzer-based randomized tests for supported transfer syntaxes
+      (DER, OER, UPER, XER) into tests/tests-randomized. See the following
+      article to get the latest LibFuzzer-enabled clang on macOS:
+        https://medium.com/@levwalkin/compile-llvm-clang-libfuzzer-b61e82718430
+      then ensure the new clang is in the way:
+        CC=clang CXX=clang++ ./configure --enable-Werror --enable-test-fuzzer
+    * OBJECT IDENTIFIER and RELATIVE-OID API simplified.
+    * uper_encode() API got new argument (breaks API compatibility).
+    * asn1c -gen-XXX flags are deprecated. Use -no-gen-XXX to disable codecs.
+
+    FIXES IN COMPILER-GENERATED OUTPUT:
+      * Fix incomplete (failed) CHOICE XER decoding memory leak.
+        (Severity: medium; Security impact: medium)
+      * Fix REAL type overwrite conversion memory leak.
+        (Severity: low; Security impact: medium)
+      * Fix UPER string decoding constrained only by lower bound > 0
+        (Severity: low; Security impact: none)
+      * Fix UPER decoding of large [bit-]strings of size a multiple of 16K
+        (Severity: low; Security impact: none)
+      * Fix XER decoder crash on maliciously constructed ENUMERATED input.
+        (Severity: medium; Security impact: medium)
+      * Fix XER decoder of INTEGER, OBJECT IDENTIFIER, and RELATIVE-OID.
+        In some cases an INTEGER overflow during parsing is not detected
+        and incorrect value is returned to the decoder instead of an error.
+        Reported by Nika Pona <npona@digamma.ai>.
+        (Severity: low; Security impact: medium).
+
+    FIXES IN TOOLING:
+      * CVE-2017-12966 verified not present.
+      * Fix `unber` buffer overrun. Reported by Eric Sesterhenn.
+        (Severity: low; Security impact: high)
+
+0.9.28: 2017-03-26
+    * PER decoding: avoid memory leak on error. By github.com/simo5
+    * Const-ness patch #46 by Wim L <wiml@omnigroup.com> (41bbf1c..78d604f).
+    Build issues:
+    * Fixed generated file permissions introduced by earlier pull (issue/32).
+    * Win32/MinGW patch #31 by Frank Morgner (frankmorgner).
+    * Autoreconf fix patch by Dave Cridland (github.com/dwd)
+    * Fix autoreconf-2.69 failure by github.com/brchiu
+    * Fix C99 warnings. Fix by Adrien Destugues (github.com/pulkomandy).
+    * C89 compliance fix by Jaroslav Imrich (github.com/jariq).
+    * C standard compliance fixes by Markus Elfring (github.com/elfring).
+
+0.9.27: 2014-Sep-17
+    * Build structure fixes for portability.
+    * Disable long debug of ASN.1 operations during `make check` stage.
+    * Introduce --enable-ASN_DEBUG configure flag to emit long debug output.
+
+0.9.26: 2014-Sep-11
+    * Updated asn1c-usage.pdf.
+    * Made -fskeletons-copy a default option; removed cmdline option.
+    * Made -fnative-types a default option; removed cmdline option.
+      Added -fwide-types for backwards compatibility.
+    * Add -fline-refs to avoid being unfriendly to version control systems.
+    * Default constraint checking fix.
+      Thanks to Bartosz Marcinkiewicz <bma@megawatt.com.pl>
+    * Get rid of non-standard pointer arithmetic on void* pointer.
+    * PER-encoding of integers wider than 32 bits.
+
+0.9.24:    2013-Mar-16
+
+    * GeneralizedTime fix for working with time offsets which are not
+      representable in whole hours. (Severity: low; Security impact: low)
+      Thanks to IP Fabrics, Inc.
+    * Added -fincludes-quoted to asn1c to generate #includes in "double"
+      instead of <angle> quotes.
+    * PER encoding correctness fix. (Severity: high; Security impact: low)
+      Reported by Grzegorz Aksamit.
+    * ENUMERATED extension values check relaxed. Reported by Gabriel Burca.
+    * Fixed decimal decoding of REAL values in -fnative-types mode
+      (Severity: medium; Security impact: medium)
+    * Removed webcgi subproject (introduced in 2004) as useless.
+
+0.9.22:    2008-Nov-19
+
+    * Added -pdu=all and -pdu=<type> switches to asn1c.
+    * Added PER support for most known-multiplier string types:
+      IA5String, VisibleString, PrintableString, BMPString, UniversalString;
+      useful types: GeneralizedTime, UTCTime, ObjectDescriptor;
+      as well as REAL and OBJECT IDENTIFIER.
+      TODO: SET type.
+    * Added PER support for extensions in SEQUENCE.
+    * Multiple enhancements by Daniele Varrazzo <daniele.varrazzo@gmail.com>
+    * Fixed explicit tagging of an in-lined constructed type.
+      (Severity: low; Security impact: none).
+    * Memory leak fixed in SET OF / SEQUENCE OF when wrong encoding
+      is encountered. (Severity: medium; Security impact: low)
+    * Fixed extensibility handling of second SEQUENCE production.
+      (Severity: low; Security impact: none)
+    * Added DEFAULT handling for known multiplier string.
+    * Added a sample OMA ULP decoder (./examples/sample.source.ULP).
+    * Added full-width 32-bit integer encoding support in PER.
+    * Fixed 1-byte OOB write issue with non-standard and Windows
+      memory allocators (Severity: low; Security impact: medium).
+      Reported by Sheng Yu.
+
+0.9.21:    2006-Sep-17
+
+    * skeletons/standard-modules directory is now used for standard types.
+    * Fixed class field access problem (Test case 98)
+      (Severity: medium; Security impact: none)
+    * Refactored Information Object Classes parsing.
+    * Refactored Parameterization support.
+    * [typedef enum foo {}] foo_e; is now e_foo, see #1287989
+    * Refactored ValueSetTypeAssignment parsing.
+    * asn-decoder-template.c renamed into converter-sample.c
+    * MEGACO (Media Gateway Control Protocol) decoder sample added.
+    * First release of PER encoder (does not encode SETs yet).
+    * Added a sample LDAP decoder (./examples/sample.source.LDAP3).
+    * Added a sample 3GPP RRC decoder (./examples/sample.source.RRC).
+    * Added a sample MEGACO (H.248.1) decoder (sample.source.MEGACO).
+
+0.9.20:    2006-Mar-06
+
+    * SET OF CHOICE, SEQUENCE OF CHOICE and a certain named S/O types
+      are represented differently in XER. THIS IS AN INCOMPATIBLE CHANGE.
+      (Test case 70) (Severity: low; Security impact: low)
+    * asn1c: Removed -ftypes88 command line option.
+    * Started PER implementation. Somewhat experimental!
+
+0.9.19:    2005-Oct-06
+
+    * A proper solution to circular references. No kludge flags
+      should be necessary anymore to produce reference-free code:
+      recursive dependencies are resolved automatically.
+    * Test cases 73 & 92 keep track of various circular references.
+    * Introduced compiler directives to allow finer control over the
+      generated code ("--<ASN1C...>--" in comments), (Test case 93).
+    * New feature for unber(1): -s <skip> bytes.
+    * Mandatory elements map for SET was not getting generated properly.
+      (Test case 94) (Severity: high; Security impact: low)
+    * asn1c: new command line option: -fskeletons-copy.
+
+0.9.18:    2005-Aug-14
+
+    * The obsolete X.208 syntax is handled gracefully now (compound types'
+      member names are invented on the fly). (Test case 87).
+    * Generating enumeration tables for INTEGER types (Test case 88).
+    * Generating enumeration tables for BIT STRING types (Test case 89).
+    * Conditional INTEGER/ENUMERATED representation: long vs. INTEGER_t
+      type is chosen based on PER visible constraints (Test cases 90, 91).
+    * Union structures for CHOICE type are not anonymous anymore.
+    * Made unber(1) program more verbose: effective structure length is
+      now displayed as L="<n>" at the closing tag. (Test check-xxber.sh).
+    * Fixed unber(1)'s -1 switch for indefinite encoding length.
+    * New command line option for unber(1): -m to enable minimalistic mode.
+
+0.9.17:    2005-Aug-07
+
+    * Tagging mode is implicitly IMPLICIT if AUTOMATIC TAGS is used, #30.6.
+      (Test cases 55, 86).
+    * Started to use extern "C" {} in skeleton headers.
+    * Introduced -finline-choice command line option to fix
+      yet another class of circular references.
+
+0.9.16:    2005-July-04
+
+    * GeneralizedTime API now supports fractions of seconds.
+      Thanks to Bent Nicolaisen <BN@JAI.com> for support.
+    * ASN.1 parser has been tweaked to allow parsing something like
+      "SEQUENCE----comment----", which is ambiguous for many reasons.
+    * XER decoder better handles not-yet-defined future extensions.
+
+0.9.15: 2005-July-02
+
+    * Compiler now checks 64-bit overflows in constraints range handling
+      code. No effect on the code produced by the compiler.
+    * Compiler support for tagged and marked parametrized members.
+    * Empty tags to element map avoided.
+    * Compiled code GCC 4.x compatibility.
+
+0.9.14:    2005-Apr-29
+
+    * Fixed check-70.-fnative-integers.c test (it was failing
+      when no test directory was found).
+
+0.9.13:    2005-Apr-24
+
+    * Added extra const qualifiers into the support code.
+    * More RFC variations supported in crfc2asn1.pl.
+    * Refined string values compatibility. (Test cases 77, 78).
+    * Support for ContainedSubtype constraints. (Test case 16).
+    * Parsing support for CONSTRAINED BY. (Test case 79).
+    * Support for CharsDefn (Quadruple and Tuple, most used in
+      ASN1-CHARACTER-MODULE) (Test case 80).
+    * Pretty-printing support for WITH COMPONENT[S]. (Test case 82).
+    * Streamed OCTET STRING decoding of large values: fixed allocation
+      problem introduced in 0.9.9. (Severity: high; Security impact: medium)
+      Reported by Yann Grossel <olrick@users.sourceforge.net>.
+    * Fixed BASIC-XER encoding of REAL numbers.
+
+0.9.12:    2005-Mar-10
+
+    * Fixed a name clash in produced constraint checking code.
+    * #includes are now in single quotes (to solve a name
+      clash with system's <time.h> on a Win32 system).
+    * Small refinement of XML DTD generation (`asn1c -X`).
+    * Relaxed XER processing rules to skip extra whitespace
+      in some more places. It also skips XML comments (although
+      XML comments in XER are prohibited by X.693, #8.2.1).
+      (Test case 70) (Severity: medium; Security impact: none)
+      Reported by <Dominique.Nerriec@alcatel.fr>.
+    * Constraints on primitive types being defined are now supported.
+      (Test case 74) (Severity: low; Security impact: none)
+    * XMLValueList generation fixed for CHOICE type.
+      (Severity: medium; Security impact: none)
+    * Added the GSM TAP3 decoder into ./examples/sample.source.TAP3
+
+0.9.11:    2005-Mar-04
+
+    * Released -fcompound-names to fix the name clashes in the code
+      produced by the asn1c.
+    * Released -fno-include-deps to avoid #including non-critical
+      external dependencies.
+    * Compiler is taught to produce compilable code for yet another class
+      of circular ASN.1 type references.
+    * X.693:8.3.4 prohibits anything but SignedNumber; fixed XER codec.
+    * Fixed ENUMERATED identifier to value conversion in XER.
+      Reported by <jacque.celaire@caramail.com>.
+    * If the compiled file contents are the same as in already existing
+      file (left from previous compilation), the old file is retained.
+      This prevents thrashing `make` dependencies if amount of changes in
+      the original ASN.1 module(s) is small.
+
+0.9.10:    2005-Feb-25
+
+    * Completed the XER XMLValueList encoding and decoding.
+    * Native integer type is now using "long".
+    * Fixed #1150856. Reported by <vvvy@users.sourceforge.net>.
+    * Some WIN32 portability fixes.
+
+0.9.9:    2005-Feb-22
+
+    * First release of XER (XML) decoding implementation (somewhat
+      experimental).
+    * ANY allocation routine fixed.
+      Reported by <mikko.ahonen@elma.net>.
+    * Fixed tag parsing (tags like "[ 0 ]" were not supported).
+    * Compiler now checks for duplicate ASN.1 types across modules.
+
+0.9.8:    2005-Jan-17
+
+    * [NEW PLATFORM] Compiled and tested on Linux @ alpha64 (LP64).
+      Some code needed to be fixed regarding int-long conversions
+      (mostly inside the test suite), and floating point handling
+      code needed to be restructured to handle signalling NAN and
+      other floating point exceptions quietly. Smooth transition!
+    * [NEW PLATFORM] Compiled and tested on Sun Solaris 9 @ sparc.
+      Improved includes/defines of/for system headers.
+    * -X command line option added to asn1c to generate XML DTD.
+    * Empty SEQUENCE and SET clauses are now allowed.
+    * Removed confusion between &xNN; and &#xNN; in enber and unber.
+    * Removed order dependency in DEFAULT references to ENUMERATED
+      identifiers (./tests/68-*-OK.asn1).
+    * ber_dec_rval_t renamed into asn_dec_rval_t: more generality.
+    * Extensions in CHOICE types are properly marked as non-pointers
+      (Test case 59) (Severity: medium; Security impact: medium)
+      Reported by <roman.pfender@sdm.de>.
+    * Tagged CHOICE type is now supported again.
+      (Test case 59) (Severity: low; Security impact: low)
+      Reported by <orlinkata@dir.bg>.
+    * Implemented der_encode_to_buffer() procedure.
+
+0.9.7.1:    2004-Oct-12
+
+    * Fixed automatic tagging for extensions of compound types.
+    * Fixed ParametrizedReference parsing: {} are now recognized.
+
+0.9.7:    2004-Oct-11
+
+    * Finished CXER implementation by adding SET and SET OF canonical
+      ordering support.
+    * Fixed unber(1) limits controlling logic.
+    * Removed C99'izm from the x509dump, now understood by older compilers.
+    * Enhanced UTF8String constraint validation, now it checks
+      for the minimal encoding length; API of UTF8String_length() changed.
+    * Fixed SEQUENCE dealing with premature termination of the
+      optionals-laden indefinite length structure. The code was previously
+      refusing to parse such structures.
+    * Fixed explicitly tagged ANY type encoding and decoding
+      (Severity: medium; Security impact: low).
+    * Fixed CHOICE code spin when indefinite length structures appear
+      in the extensions (Severity: medium; Security impact: medium).
+      Reported by <siden@ul-gsm.ru>.
+    * BIT STRING now stores the number of unused octets in a separate field.
+
+0.9.6:    2004-Sep-29
+
+    * Added several security firewalls: decoder's stack usage control
+      and the stricter checking of the TLV length.
+    * Implemented BASIC-XER encoding support (X.693).
+    * Implemented unber(1) and enber(1) for BER<->XML translation.
+    * Implemented CGI for online ASN.1 compilation (asn1c/webcgi).
+    * Implemented the sample X.509 decoder (./examples/sample.source.PKIX1).
+    * NamedType is now supported for SET OF/SEQUENCE OF type.
+    * Added -fno-constraints option to asn1c, which disabled generation of
+      ASN.1 subtype constraints checking code.
+    * Added ASN1C_ENVIRONMENT_VERSION and get_asn1c_environment_version().
+    * Fixed ANY type decoding (Severity: high; Security impact: low).
+    * Fixed BER decoder restart-ability problem with certain primitive
+      types (BOOLEAN, INTEGER, and REAL). The problem occurred when the
+      encoding of such type is split between several bytes.
+      (Severity: high; Security impact: low)
+    * Support for cross-referencing type definitions (updated ./tests/43-*).
+    * Fixed pretty-printing of the REAL type. Added lots of test cases.
+    * Renamed asn1_* into asn_* in function and type names.
+    * Updated documentation.
+
+0.9.5:    2004-Sep-17
+
+    * Fixed CER (common BER) decoder code. See check-25.c/VisibleString
+      case for details. X.690 specifies that inner structures in BER
+      encoding must be tagged by stripping off the outer tag for each
+      subsequent containment level. See also X.690: 8.21.5.4 and
+      the "Spouse" case in A.3.
+      (Severity: medium; Security impact: low)
+    * Added converters between any generic type and the ANY type.
+    * Parser fixed: Information Object Class fields may be tagged.
+    * Parser fixed: tagged types inside SEQUENCE OF/SET OF support.
+    * Improved DEFAULT Value parsing and pretty-printing.
+    * Condition on distinct tags checker was incorrectly dealing with
+      tagged CHOICE types. Fixed. Modified tests/37-indirect-choice-OK.asn1
+    * Improved type name generation code ("struct foo" vs "foo_t").
+    * Fixed constraint checking code incorrectly dealing with imported
+      types with constraint values defined in other modules.
+    * Real REAL support! (Haven't tested "denormals" support yet!)
+      See skeletons/tests/check-REAL.c
+
+0.9.4:    2004-Sep-10
+
+    * More support for recursive type definitions.
+    * Explicit support for ANY type decoding.
+    * Refactored tags processing code.
+    * Fixed constraints checking code: non-exploitable buffer overflow.
+      (Severity: medium; Security impact: low)
+
+0.9.3:    2004-Sep-07
+
+    * Extended constraints support in parametrized types.
+    * Better support for parametrization and constraints handling.
+    * Better handling of recursive type definitions.
+    * Added support for ANY type.
+
+0.9.2:    2004-Aug-24
+
+    * More flexible subtype constraints handling, with relaxed
+      PER visibility rules for actual constraints checking code generator.
+    * Indirect references in constraints resolver code fixed.
+    * Avoided compilation warning on gcc 3.3.3 systems.
+    * Better ValueSet printing.
+
+0.9.1:    2004-Aug-23
+
+    * Documentation updated: doc/asn1c-usage.pdf
+    * Fixed OBJECT IDENTIFIER human-readable printing.
+      Reported by <siden@ul-gsm.ru>.
+
+0.9:    2004-Aug-23
+
+    * Reworked subtype constraints handling, aiming at PER-applicability.
+    * BOOLEAN and NULL are now implemented in terms of native int type.
+    * Compiler now links in only necessary skeleton files.
+    * -t option added to asn1c to ease manual BER/CER/DER decoding.
+    * Added support COMPONENTS OF construct.
+    * Numerous parser fixes and enhancements.
+    * Better constraint failure reporting.
+
+0.8.19:    2004-Aug-18
+
+    * Fixed BER encoder (problem encoding large tag values)
+      (Severity: medium; Security impact: low)
+
+0.8.18:    2004-Aug-12
+
+    * Parser: fixed multiple IMPORTS problem (incorrect assertion).
+    * Parser: constraints extensibility parsing fix.
+
+0.8.17:    2004-Aug-11
+
+    * Improved compiler output: duplicate #includes eliminated.
+    * Win32 portability fixes.
+    * More compatibility with C++ or non-GCC compilers.
+
+0.8.16:    2004-Jul-22
+
+    * Fixed application-level problem in SET OF/SEQUENCE OF array cleanup.
+      (Severity: medium; Security impact: low)
+    * Improved asn_GT2time() and added asn_time2{GT,UT}() functions.
+    * BIT STRING pretty-printing.
+
+0.8.15:    2004-Jul-20
+
+    * Fixed parser: memory leak in free_struct code for SET OF/SEQUENCE OF.
+      (Severity: high; Security impact: medium)
+    * Fixed parser: invalid memory reference in code constructing tags.
+      (Test case 48) (Severity: high; Security impact: medium)
+      When encoding data for certain ASN.1 specifications containing
+      explicit tags, the tag is always written incorrectly due to
+      incorrect memory reference. The encoding will almost always produce
+      unparsable data and might well reference unmapped region so program
+      would produce segmentation violation. Fortunately, memory is
+      read, not written, so remote exploits cannot execute arbitrary
+      code and triggering unmapped memory reference is highly unlikely
+      even it attacker knows the code (basically, the compiler should place
+      asn1_DEF_... right before the end of the mapped memory region, which
+      is extremely rare).
+    * Improved INTEGER type printing.
+
+0.8.14:    2004-Jun-30
+
+    * Fixed compiler: extensibility of CHOICE and SET type has not been
+      taken into account during table construction.
+      (Test case 47) (Severity: high; Security impact: low)
+
+0.8.13:    2004-Jun-29
+
+    * Fixed compiler: the skip values for IMPLICIT tagging were broken
+      in some complex cases where one type is defined using another.
+      (Test case 46) (Severity: medium; Security impact: low).
+    * Added -fknown-extern-type command line parameter to asn1c.
+    * Removed -N command line flag and underlying functionality
+      to honor KISS principle.
+
+0.8.12:    2004-Jun-17
+
+    * RELATIVE-OID and OBJECT IDENTIFIER encoders/decoders are not bound
+      anymore to an integer type of specific size (unsigned long). The
+      size of an integer must be provided explicitly.
+      See {OBJECT_IDENTIFIER|RELATIVE_OID}_{get|set}_arcs().
+    * SEQUENCE BER decoder fixed again for complex CHOICE case
+      (Test case 44) (Severity: medium; Security impact: low).
+
+0.8.11:    2004-Jun-05
+
+    * Enforced stricter conformance with C standards.
+    * SEQUENCE BER decoder is now equipped with the sorted map
+      in case of complex CHOICE descendants. Test case 44 created.
+
+0.8.10:    2004-Jun-02
+
+    * Added const qualifier where necessary.
+    * Changed position of outmost_tag fetcher within asn1_TYPE_descriptor_t
+      structure.
+
+0.8.9:    2004-May-26
+
+    * Added *_{get|set}_arcs_*() functions for OBJECT IDENTIFIER
+      and RELATIVE-OID, together with test cases.
+
+0.8.8:    2004-May-09
+
+    * Introduced subtype constraints support (incomplete!).
+    * Fixed compiler. If the last member of the SEQUENCE is OPTIONAL
+      and absent in the encoding, and the type is extensible (...) or
+      EXTENSIBILITY IMPLIED flag is set, then the structure could not
+      be correctly decoded. (Severity: high; Security impact: low).
+    * Compiler: fixed recursive ASN.1 types inclusion (Severity: low,
+      Security impact: none).
+    * Parser: IMPORTS/FROM fixes, now allowing multiple sections.
+    * NEW PLATFORM: Compiled and tested on MacOS X (@ PowerPC).
+      No major portability issues experienced.
+
+0.8.7:    2004-Apr-11    T-version-0-8-7
+
+    * Fixed SEQUENCE BER decoder: if the last member of the SEQUENCE is
+      OPTIONAL and absent in the encoding, RC_FAIL was returned instead
+      of RC_OK (Severity: high; Security impact: low).
+    * Added test case to check the above problem.
+    * Added test case to check -fnative-integers mode.
+
+0.8.6:    2004-Apr-03    T-version-0-8-6
+
+    * Fixed compiler output for embedded ASN.1 structures.
+
+0.8.5:    2004-Mar-28    T-version-0-8-5
+
+    * Fixed ber_tlv_length() computation problem (Severity: high,
+      Security impact: none).
+      Reported by <vss@high.net.ru>
+
+0.8.4:    2004-Mar-22
+
+    * Removed RC_ITAG enumeration element from BER decoder.
+      This return code did not have much practical value.
+
+0.8.3:    2004-Mar-14    T-version-0-8-3
+
+    * Fixed SET::BER decoder: restart after reaching a buffer boundary
+      was broken (Severity: high; Security impact: low).
+    * Fixed OCTET STRING::BER decoder: restart after reaching a buffer
+      boundary was broken (Severity: high; Security impact: low).
+      Reported by <vss@high.net.ru>
+    * Added test cases to check decoders restart-ability.
+    * Slightly more general INTEGER2long decoder.
+    * Allowed nested /* C-type */ comments, as per X.680:2002.
+
+0.8.2:    2004-Mar-01    T-version-0-8-2
+
+    * Fixed SEQUENCE BER decoder: an OPTIONAL element was required, where
+      should not have been (Severity: major; Security impact: low).
+    * Fixed print_struct pointer inheritance.
+    * Added -fno-c99 and -funnamed-unions
+
+0.8.1:    2004-Feb-22
+
+    * -R switch to asn1c: Omit support code, compile only the tables.
+    * Introduced NativeInteger pseudotype.
+    * Corrected the informal print_struct()'s output format.
+
+0.8.0:    2004-Feb-03    T-version-0-8-0
+
+    * Some documentation is created (a .pdf and a short manual page).
+    * Last touches to the code.
+
+0.7.9:    2004-Feb-01    T-version-0-7-9
+
+    * Human readable printing support.
+    * Support for implicit (standard) constraints.
+
+0.7.8:    2004-Jan-31
+
+    * SET now rejects duplicate fields in the data stream.
+
+0.7.7:    2004-Jan-25
+
+    * Added types: GeneralizedTime and UTCTime.
+
+0.7.6:    2004-Jan-24    T-version-0-7-6
+
+    * DER encoding of a SET OF now involves dynamic sorting.
+
+0.7.5:    2004-Jan-24    T-version-0-7-5
+
+    * DER encoding of a SET with untagged CHOICE
+      now involves dynamic sorting.
+
+0.7.0:    2004-Jan-19    T-version-0-7-0
+
+    * A bunch of DER encoders is implemented.
+
+0.6.6:    2004-Jan-11
+
+    * Implemented CHOICE decoder.
+    * Implemented destructors support.
+
+0.6.5:    2004-Jan-03
+
+    * Implemented SET decoder.
+    * Implemented SET OF and SEQUENCE OF decoders.
+
+0.6.4:    2003-Dec-31
+
+    * Implemented BOOLEAN, NULL, ENUMERATED decoders.
+    * Implemented OCTET STRING decoder.
+    * Implemented BIT STRING decoder.
+
+0.6:    2003-Dec-30
+
+    * First decoding of a BER-encoded structure!
+
+0.5:    2003-Dec-28
+
+    * Framework and most of the compiler backbone coding done.
+
+0.1:    2003-Nov-28
+
+    * Programming started.
+
+=== Bug importance disclosure terms ===
+
+SEVERITY.
+    This term applies to the frequency the particular construct is used
+    in the real world. The higher the frequency, the more chances of triggering
+    this bug.
+    low:    The ASN.1 specifications which could trigger
+            this kind of bug are not widespread.
+    medium: The particular ASN.1 construct is used quite often,
+            so the chance of triggering an error is considerable.
+    high:   This fix is considered urgent, or the particular ASN.1
+            construct triggering this bug is in wide use.
+
+SECURITY IMPACT.
+    This term applies to the amount of potential damage a bug exploitation
+    could cause.
+    none:   No malicious exploitation is possible.
+    low:    The local exploitation is unlikely; the remote exploitation
+            is not possible.
+    medium: The remote exploitation is possible when a particular ASN.1
+            construct is being used. If possible, only hard failure, spin
+            or memory leak are the possible outcome: no shellcode
+            injection could possibly be carried by the attack.
+    high:   The remote shellcode injection is possible, or the bug is
+            otherwise remotely exploitable for most specifications.

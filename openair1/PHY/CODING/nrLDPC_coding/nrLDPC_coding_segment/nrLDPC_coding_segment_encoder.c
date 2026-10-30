@@ -132,46 +132,42 @@ static void write_task_output(uint8_t *f,
   }
        
 #else
-  uint32_t *output_p = (uint32_t*)output;
-
-  for (int i=0; i < E2; i += 32) {
-    uint32_t Eoffset2 = Eoffset;
+  /* Portable scalar equivalent of the x86 movemask packing path. Each 16-bit
+   * lane is shifted before the two byte sign bits are gathered into a 32-bit
+   * mask; emit those gathered bits directly into the packed output stream. */
+  for (uint32_t i = 0; i < E2; i += 32) {
+    uint32_t bit_offset = Eoffset + i;
     if (i < E) {
-      for (int j = 0; j < E2_first_segment; j++) {
-        // Note: Here and below, we are using the 64-bit SIMD instruction
-        // instead of C >>/<< because when the Eoffset2_bit is 64 or 0, the <<
-        // and >> operations are undefined and in fact don't give "0" which is
-        // what we want here. The SIMD version do give 0 when the shift is 64
-        uint32_t Eoffset2_byte = Eoffset2 >> 5;
-        uint32_t Eoffset2_bit = Eoffset2 & 31;
-        int tmp = _mm256_movemask_epi8(_mm256_slli_epi16(((__m256i *)f)[i >> 5], 7 - j));
-        __m64 tmp64 = _mm_set1_pi32(tmp);
-        __m64 out64 = _mm_set_pi32(*(output_p + Eoffset2_byte + 1), *(output_p + Eoffset2_byte));
-        __m64 tmp64b = _mm_or_si64(out64, _mm_slli_pi32(tmp64, Eoffset2_bit));
-        __m64 tmp64c = _mm_or_si64(out64, _mm_srli_pi32(tmp64, (32 - Eoffset2_bit)));
-        *(output_p + Eoffset2_byte) = _m_to_int(tmp64b);
-        *(output_p + Eoffset2_byte + 1) = _m_to_int(_mm_srli_si64(tmp64c, 32));
-        Eoffset2 += E;
+      for (uint32_t j = 0; j < E2_first_segment; j++) {
+        for (uint32_t k = 0; k < 16; k++) {
+          const uint16_t pair = (uint16_t)f[i + 2 * k] | ((uint16_t)f[i + 2 * k + 1] << 8);
+          const uint16_t shifted = (uint16_t)(pair << (7 - j));
+          const uint32_t b0 = bit_offset + 2 * k;
+          const uint32_t b1 = b0 + 1;
+          if (shifted & 0x0080)
+            output[b0 >> 3] |= (uint8_t)(1u << (b0 & 7));
+          if (shifted & 0x8000)
+            output[b1 >> 3] |= (uint8_t)(1u << (b1 & 7));
+        }
+        bit_offset += E;
       }
     } else {
-      for (int j = 0; j < E2_first_segment; j++) {
-        Eoffset2 += E;
-      }
-    } 
-    for (int j = E2_first_segment; j < nb_segments; j++) {
-      uint32_t Eoffset2_byte = Eoffset2 >> 5;
-      uint32_t Eoffset2_bit = Eoffset2 & 31;
-      int tmp = _mm256_movemask_epi8(_mm256_slli_epi16(((__m256i *)f2)[i >> 5], 7 - j));
-      __m64 tmp64 = _mm_set1_pi32(tmp);
-      __m64 out64 = _mm_set_pi32(*(output_p + Eoffset2_byte + 1), *(output_p + Eoffset2_byte));
-      __m64 tmp64b = _mm_or_si64(out64, _mm_slli_pi32(tmp64, Eoffset2_bit));
-      __m64 tmp64c = _mm_or_si64(out64, _mm_srli_pi32(tmp64, (32 - Eoffset2_bit)));
-      *(output_p + Eoffset2_byte)  = _m_to_int(tmp64b);
-      *(output_p + Eoffset2_byte + 1) = _m_to_int(_mm_srli_si64(tmp64c, 32));
-      Eoffset2 += E2;
+      bit_offset += E * E2_first_segment;
     }
-    output_p++;
-  } 
+    for (uint32_t j = E2_first_segment; j < nb_segments; j++) {
+      for (uint32_t k = 0; k < 16; k++) {
+        const uint16_t pair = (uint16_t)f2[i + 2 * k] | ((uint16_t)f2[i + 2 * k + 1] << 8);
+        const uint16_t shifted = (uint16_t)(pair << (7 - j));
+        const uint32_t b0 = bit_offset + 2 * k;
+        const uint32_t b1 = b0 + 1;
+        if (shifted & 0x0080)
+          output[b0 >> 3] |= (uint8_t)(1u << (b0 & 7));
+        if (shifted & 0x8000)
+          output[b1 >> 3] |= (uint8_t)(1u << (b1 & 7));
+      }
+      bit_offset += E2;
+    }
+  }
 #endif
 }
 

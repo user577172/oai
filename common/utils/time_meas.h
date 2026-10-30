@@ -17,7 +17,7 @@
 // global var to enable openair performance profiler
 extern int cpu_meas_enabled;
 // structure to store data to compute cpu measurment
-#if defined(__x86_64__) || defined(__i386__) || defined(__arm__) || defined(__aarch64__)
+#if defined(__x86_64__) || defined(__i386__) || defined(__arm__) || defined(__aarch64__) || defined(__riscv)
   typedef long long oai_cputime_t;
 #else
   #error "building on unsupported CPU architecture"
@@ -225,6 +225,14 @@ static inline uint32_t rdtsc_oai(void) {
   uint32_t r = 0;
   asm volatile("mrc p15, 0, %0, c9, c13, 0" : "=r"(r) );
   return r;
+}
+#elif defined(__riscv)
+static inline uint64_t rdtsc_oai(void) __attribute__((always_inline));
+static inline uint64_t rdtsc_oai(void)
+{
+  struct timespec ts;
+  clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+  return (uint64_t)ts.tv_sec * 1000000000ULL + (uint64_t)ts.tv_nsec;
 }
 #endif
 

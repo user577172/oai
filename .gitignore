@@ -34,3 +34,22 @@ nfapi_nr_interface_scf
 *.log
 *.out
 CMakeUserPresets.json
+
+# K3 portable bundle: keep source/configuration, exclude host-sized toolchain
+# and generated/runtime state.
+ext/toolchain/
+ext/mysql/run/
+ext/mysql/log/
+ext/mysql/*.pid
+ext/mysql/*.sock
+ext/cn5gcorenetwork/logs/
+ext/cn5gcorenetwork/run/
+ext/cn5gcorenetwork/diagnostics/
+ext/cn5gcorenetwork/backups/
+ext/asn1c/build/
+ext/asn1c/probe.*/
+ext/asn1c/probe-*/
+
+# Local backup/sampling snapshots are not source inputs.
+*.pre-*
+*.bak-*

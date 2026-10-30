@@ -96,7 +96,15 @@ function(check_option EXEC TEST_OPTION EXEC_HINT)
                   RESULT_VARIABLE CHECK_STATUS
                   OUTPUT_VARIABLE CHECK_OUTPUT
                   ERROR_VARIABLE CHECK_OUTPUT)
-  if(NOT ${CHECK_STATUS} EQUAL 1)
+  set(ASN1C_OPTION_CHECK_OK FALSE)
+  if("${CHECK_STATUS}" STREQUAL "1")
+    set(ASN1C_OPTION_CHECK_OK TRUE)
+  elseif("${CHECK_STATUS}" STREQUAL "64" AND CHECK_OUTPUT MATCHES "No input files specified")
+    # Newer asn1c versions return EX_USAGE (64) after validating an option but
+    # being invoked without a schema; older OAI-pinned versions return 1.
+    set(ASN1C_OPTION_CHECK_OK TRUE)
+  endif()
+  if(NOT ASN1C_OPTION_CHECK_OK)
     get_filename_component(EXEC_FILE ${EXEC} NAME)
     message(FATAL_ERROR "Error message: ${CHECK_OUTPUT}\
 You might want to re-run ./build_oai -I

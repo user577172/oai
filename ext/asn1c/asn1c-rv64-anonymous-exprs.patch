@@ -1,0 +1,16 @@
+--- a/libasn1fix/asn1fix.c
++++ b/libasn1fix/asn1fix.c
+@@ -513,5 +513,8 @@
+ asn1f_check_duplicate(arg_t *arg) {
+ 	arg_t tmparg = *arg;
+ 	int rvalue = 0;
++	/* ASN.1 permits anonymous nested expressions in extension structures. */
++	if(arg->expr == NULL || arg->expr->Identifier == NULL)
++		return 0;
+ 
+ 	/*
+@@ -533,2 +536,2 @@
+-			assert(tmparg.expr->Identifier);
+-			assert(arg->expr->Identifier);
++			if(tmparg.expr == NULL || tmparg.expr->Identifier == NULL)
++				continue;

@@ -2,3 +2,12 @@
 	path = openair2/E2AP/flexric
 	url = https://github.com/duranta-project/flexric.git
 
+[submodule "ext/asn1c/source"]
+	path = ext/asn1c/source
+	url = https://github.com/mouse07410/asn1c.git
+[submodule "ext/asn1c/source-oai-pinned"]
+	path = ext/asn1c/source-oai-pinned
+	url = https://github.com/mouse07410/asn1c.git
+[submodule "ext/simde/source"]
+	path = ext/simde/source
+	url = https://github.com/simd-everywhere/simde-no-tests.git
