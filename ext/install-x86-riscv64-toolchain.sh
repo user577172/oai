@@ -64,6 +64,11 @@ target_packages=(
 )
 apt-get "${apt_opts[@]}" -y --download-only --no-install-recommends install "${target_packages[@]}"
 for deb in "$DOWNLOADS/target"/*.deb; do dpkg-deb -x "$deb" "$SYSROOT"; done
+# Ubuntu 24.04 target packages assume the merged-/usr links supplied by the
+# base-files package.  A package-only sysroot must recreate them explicitly so
+# absolute paths in libc.so linker scripts resolve below CMAKE_SYSROOT.
+ln -sfn usr/lib "$SYSROOT/lib"
+[[ ! -d "$SYSROOT/usr/lib64" ]] || ln -sfn usr/lib64 "$SYSROOT/lib64"
 
 real_gcc="$(find "$PREFIX/usr/bin" -maxdepth 1 -type f -name 'riscv64-linux-gnu-gcc-[0-9]*' | sort -V | tail -1)"
 real_gxx="$(find "$PREFIX/usr/bin" -maxdepth 1 -type f -name 'riscv64-linux-gnu-g++-[0-9]*' | sort -V | tail -1)"
