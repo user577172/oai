@@ -8,6 +8,7 @@ cmake_targets/ran_build/
 log/
 lte_build_oai/
 build*
+!scripts/build-oai-native.sh
 
 # IDE files
 .vscode
@@ -47,6 +48,8 @@ ext/cn5gcorenetwork/run/
 ext/cn5gcorenetwork/diagnostics/
 ext/cn5gcorenetwork/backups/
 ext/asn1c/build/
+ext/asn1c/build-host-x86_64/
+ext/asn1c/install-host-x86_64/
 ext/asn1c/probe.*/
 ext/asn1c/probe-*/
 
