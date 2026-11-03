@@ -1,0 +1,16 @@
+
+The name of the check-N.c file is used as a pointer to the file
+../../tests/N-*.asn1. That ASN.1 file is compiled together with check-N.c
+in a temporary directory. The check-N.c file contains the test engine.
+
+For manual execution of a specific test case:
+
+	./check-assembly.sh check-<NN>.c
+
+check-65.c covers nested explicit and implicit BER tags on REAL aliases and
+SEQUENCE members. Its complete values decode as zero (T1) and -1, +1, and +4
+(T). Binary REAL contents include a format octet, an exponent, and a mantissa;
+the old C0 00 and 80 00 contents omitted the mantissa and are rejection cases.
+The test also checks truncated inputs and malformed tags and wrapper lengths.
+The fixture was corrected after the issue #585 decoder hardening exposed it.
+

@@ -1,0 +1,64 @@
+language: c
+
+compiler:
+  - gcc
+  - clang
+
+os:
+  - linux
+  - osx
+
+# Linux
+dist: xenial
+sudo: required
+
+# OS X only supports one image. Use the latest.
+osx_image: xcode11.6
+
+env:
+  - TASK=check CONFIG_FLAGS="--enable-Werror --enable-test-Werror --enable-code-coverage"
+  - TASK=distcheck
+
+matrix:
+  exclude:
+    - os: osx
+      compiler: gcc
+  allow_failures:
+    - os: osx
+      env: TASK=distcheck
+
+addons:
+  homebrew:
+    packages:
+      - libtool
+      - lcov
+    update: false
+  apt:
+    packages:
+      - gcc-multilib
+      - lcov
+      - libasan0
+      - libasan1
+      - libasan2
+
+before_install:
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        gem install coveralls-lcov;
+    fi
+script:
+  - export
+  - autoreconf -iv
+  - ./configure $CONFIG_FLAGS
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        make -j "$(nproc)" $TASK
+    fi
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        make -j "$(sysctl -n hw.activecpu)" $TASK
+    fi
+after_success:
+  - test "x$CC" = "xgcc" -o "x$CC" = "xclang" && make code-coverage-capture && coveralls-lcov asn1c-*-coverage.info
+after_failure:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then find . -name test-suite.log -exec tail -v -n +1 {} + ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then find . -name test-suite.log -exec tail -n +1 {} + ; fi

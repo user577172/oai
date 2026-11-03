@@ -50,6 +50,12 @@ void PHY_ofdm_mod(const int *input, /// pointer to complex input
     switch (etype) {
       case CYCLIC_PREFIX: {
         int *output_ptr = &output[(i * fftsize) + ((1 + i) * nb_prefix_samples)];
+#if defined(__riscv_vector)
+        if (fftsize == 2048) {
+          /* The RVV kernel accepts naturally aligned complex samples. */
+          idft(idft_size, (int16_t *)&input[i * fftsize], (int16_t *)output_ptr, 1);
+        } else
+#endif
         // Current idft implementation uses AVX-256: Check if buffer is already aligned to 256 bits (32 bytes)
         if ((uintptr_t)output_ptr % 32 == 0) {
           // output ptr is aligned, do ifft inplace

@@ -124,3 +124,7 @@ Your email should contain below information:
 - Known/open issues are present on [Github](https://github.com/duranta-project/openairinterface5g/issues), so keep checking.
 
 Always remember a structured email will help us understand your issues quickly.
+
+## K3 RVV PHY profile
+
+The `riscv` branch includes the XSAI RVV LDPC and DFT/IDFT backend. See [RVV integration and verification](doc/rvv-port.md) for the separate vector build profile and validation scope.

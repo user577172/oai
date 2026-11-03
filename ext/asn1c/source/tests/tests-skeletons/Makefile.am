@@ -1,0 +1,234 @@
+@CODE_COVERAGE_RULES@
+
+check_PROGRAMS =                \
+    check-ber_tlv_tag           \
+    check-length                \
+    check-bits                  \
+    check-copy                  \
+    check-OIDs                  \
+    check-GeneralizedTime       \
+    check-OCTET_STRING          \
+    check-UTF8String            \
+    check-UTCTime               \
+    check-INTEGER               \
+    check-BER-NativeInteger-uint64 \
+    check-REAL                  \
+    check-XER                   \
+    check-XER-base64            \
+    check-XER-octstr-auto       \
+    check-XER-octstr-pdu        \
+    check-XER-empty-names       \
+    check-XER-empty-optionals   \
+    check-XER-formatting        \
+    check-XER-formatting-regression \
+    check-XER-CHOICE-formatting \
+    check-JER                   \
+    check-CBOR                  \
+    check-binary-dispatch       \
+    check-CER                   \
+    check-CER-decode            \
+    check-BER-expected-tag      \
+    check-OCTET_STRING-der-guard \
+    check-OCTET_STRING-rfill-guard \
+    check-CER-limits            \
+    check-CER-resources         \
+    check-CER-work              \
+    check-CER-scratch           \
+    check-OER-support           \
+    check-OER-INTEGER           \
+    check-OER-NativeEnumerated  \
+    check-APER-support          \
+    check-APER-OCTET_STRING     \
+    check-APER-INTEGER		\
+    check-APER-INTEGER-constraint \
+    check-APER-INTEGER-semiconstrained \
+    check-APER-INTEGER-extensible-semi \
+    check-APER-INTEGER-srbid    \
+    check-APER-INTEGER-f1ap     \
+    check-APER-INTEGER-x691-range \
+    check-APER-INTEGER-signpad \
+    check-UPER-support          \
+    check-UPER-UniversalString  \
+    check-UPER-PrintableString  \
+    check-UPER-INTEGER          \
+    check-UPER-INTEGER-semiconstrained \
+    check-UPER-INTEGER-signpad \
+    check-PER-INTEGER-security \
+    check-recursive-overflow     \
+    check-PER-opentype          \
+    check-PER-NativeEnumerated  \
+    check-APER-NativeEnumerated \
+    check-PER-nsnnwn            \
+    check-PER-strict-ext
+
+check_PER_strict_ext_CFLAGS = -DASN_REJECT_UNKNOWN_EXTENSIONS
+check_PER_strict_ext_SOURCES = check-PER-strict-ext.c
+check_PER_strict_ext_LDADD = -lm $(top_builddir)/skeletons/libasn1cskeletons_strict.la
+
+if EXPLICIT_M32
+check_PROGRAMS +=                   \
+    check-32-ber_tlv_tag            \
+    check-32-length                 \
+    check-32-bits                   \
+    check-32-copy                   \
+    check-32-OIDs                   \
+    check-32-GeneralizedTime        \
+    check-32-OCTET_STRING           \
+    check-32-UTF8String             \
+    check-32-UTCTime                \
+    check-32-INTEGER                \
+    check-32-REAL                   \
+    check-32-XER                    \
+    check-32-XER-base64             \
+    check-32-JER                    \
+    check-32-OER-support            \
+    check-32-OER-INTEGER            \
+    check-32-OER-NativeEnumerated   \
+    check-32-APER-support           \
+    check-32-APER-OCTET_STRING      \
+    check-32-APER-INTEGER           \
+    check-32-APER-INTEGER-semiconstrained \
+    check-32-UPER-support           \
+    check-32-UPER-UniversalString   \
+    check-32-UPER-INTEGER           \
+    check-32-UPER-INTEGER-semiconstrained
+
+check_32_ber_tlv_tag_CFLAGS=$(CFLAGS_M32)
+check_32_ber_tlv_tag_LDADD=$(LDADD_32)
+check_32_ber_tlv_tag_SOURCES=check-ber_tlv_tag.c
+check_32_length_CFLAGS=$(CFLAGS_M32)
+check_32_length_LDADD=$(LDADD_32)
+check_32_length_SOURCES=check-length.c
+check_32_bits_CFLAGS=$(CFLAGS_M32)
+check_32_bits_LDADD=$(LDADD_32)
+check_32_bits_SOURCES=check-bits.c
+check_32_copy_CFLAGS=$(CFLAGS_M32)
+check_32_copy_LDADD=$(LDADD_32)
+check_32_copy_SOURCES=check-copy.c
+check_32_OIDs_CFLAGS=$(CFLAGS_M32)
+check_32_OIDs_LDADD=$(LDADD_32)
+check_32_OIDs_SOURCES=check-OIDs.c
+check_32_GeneralizedTime_CFLAGS=$(CFLAGS_M32)
+check_32_GeneralizedTime_LDADD=$(LDADD_32)
+check_32_GeneralizedTime_SOURCES=check-GeneralizedTime.c
+check_32_OCTET_STRING_CFLAGS=$(CFLAGS_M32)
+check_32_OCTET_STRING_LDADD=$(LDADD_32)
+check_32_OCTET_STRING_SOURCES=check-OCTET_STRING.c
+check_32_UTF8String_CFLAGS=$(CFLAGS_M32)
+check_32_UTF8String_LDADD=$(LDADD_32)
+check_32_UTF8String_SOURCES=check-UTF8String.c
+check_32_UTCTime_CFLAGS=$(CFLAGS_M32)
+check_32_UTCTime_LDADD=$(LDADD_32)
+check_32_UTCTime_SOURCES=check-UTCTime.c
+check_32_INTEGER_CFLAGS=$(CFLAGS_M32)
+check_32_INTEGER_LDADD=$(LDADD_32)
+check_32_INTEGER_SOURCES=check-INTEGER.c
+check_32_REAL_CFLAGS=$(CFLAGS_M32)
+check_32_REAL_LDADD=$(LDADD_32)
+check_32_REAL_SOURCES=check-REAL.c
+check_32_XER_CFLAGS=$(CFLAGS_M32)
+check_32_XER_LDADD=$(LDADD_32)
+check_32_XER_SOURCES=check-XER.c
+check_32_XER_base64_CFLAGS=$(CFLAGS_M32)
+check_32_XER_base64_LDADD=$(LDADD_32)
+check_32_XER_base64_SOURCES=check-XER-base64.c
+check_32_JER_CFLAGS=$(CFLAGS_M32)
+check_32_JER_LDADD=$(LDADD_32)
+check_32_JER_SOURCES=check-JER.c
+check_32_OER_support_CFLAGS=$(CFLAGS_M32)
+check_32_OER_support_LDADD=$(LDADD_32)
+check_32_OER_support_SOURCES=check-OER-support.c
+check_32_OER_INTEGER_CFLAGS=$(CFLAGS_M32)
+check_32_OER_INTEGER_LDADD=$(LDADD_32)
+check_32_OER_INTEGER_SOURCES=check-OER-INTEGER.c
+check_32_OER_NativeEnumerated_CFLAGS=$(CFLAGS_M32)
+check_32_OER_NativeEnumerated_LDADD=$(LDADD_32)
+check_32_OER_NativeEnumerated_SOURCES=check-OER-NativeEnumerated.c
+check_32_APER_support_CFLAGS=$(CFLAGS_M32)
+check_32_APER_support_LDADD=$(LDADD_32)
+check_32_APER_support_SOURCES=check-APER-support.c
+check_32_APER_OCTET_STRING_CFLAGS=$(CFLAGS_M32)
+check_32_APER_OCTET_STRING_LDADD=$(LDADD_32)
+check_32_APER_OCTET_STRING_SOURCES=check-APER-OCTET_STRING.c
+check_32_APER_INTEGER_CFLAGS=$(CFLAGS_M32)
+check_32_APER_INTEGER_LDADD=$(LDADD_32)
+check_32_APER_INTEGER_SOURCES=check-APER-INTEGER.c
+check_32_APER_INTEGER_semiconstrained_CFLAGS=$(CFLAGS_M32)
+check_32_APER_INTEGER_semiconstrained_LDADD=$(LDADD_32)
+check_32_APER_INTEGER_semiconstrained_SOURCES=check-APER-INTEGER-semiconstrained.c
+check_32_UPER_support_CFLAGS=$(CFLAGS_M32)
+check_32_UPER_support_LDADD=$(LDADD_32)
+check_32_UPER_support_SOURCES=check-UPER-support.c
+check_32_UPER_UniversalString_CFLAGS=$(CFLAGS_M32)
+check_32_UPER_UniversalString_LDADD=$(LDADD_32)
+check_32_UPER_UniversalString_SOURCES=check-UPER-UniversalString.c
+check_32_UPER_INTEGER_CFLAGS=$(CFLAGS_M32)
+check_32_UPER_INTEGER_LDADD=$(LDADD_32)
+check_32_UPER_INTEGER_SOURCES=check-UPER-INTEGER.c
+check_32_UPER_INTEGER_semiconstrained_CFLAGS=$(CFLAGS_M32)
+check_32_UPER_INTEGER_semiconstrained_LDADD=$(LDADD_32)
+check_32_UPER_INTEGER_semiconstrained_SOURCES=check-UPER-INTEGER-semiconstrained.c
+
+
+LDADD_32 = -lm $(top_builddir)/skeletons/libasn1cskeletons_c89_32.la
+endif
+
+check_CBOR_SOURCES=check-CBOR.c
+check_CER_SOURCES = check-CER.c $(top_srcdir)/skeletons/cer_encoder.c
+check_CER_CPPFLAGS = -DASN_CER_MAX_ENCODED_SIZE=4096u
+check_CER_LDADD = $(LDADD)
+check_CER_decode_SOURCES = check-CER-decode.c
+check_CER_decode_LDADD = $(LDADD)
+check_BER_expected_tag_SOURCES = check-BER-expected-tag.c
+check_BER_expected_tag_LDADD = $(LDADD)
+check_OCTET_STRING_der_guard_SOURCES = check-OCTET_STRING-der-guard.c
+check_OCTET_STRING_der_guard_LDADD = $(LDADD)
+check_OCTET_STRING_rfill_guard_SOURCES = check-OCTET_STRING-rfill-guard.c
+check_OCTET_STRING_rfill_guard_LDADD = $(LDADD)
+check_CER_limits_SOURCES = check-CER-limits.c \
+    $(top_srcdir)/skeletons/cer_encoder.c
+check_CER_limits_CPPFLAGS = \
+    -DASN_CER_MAX_ENCODED_SIZE=2u \
+    -DASN_CER_MAX_SCRATCH_SIZE=4096u \
+    -DASN_CER_MAX_ELEMENTS=16u \
+    -DASN_CER_MAX_WORK_ITEMS=1024u
+check_CER_limits_LDADD = $(LDADD)
+check_CER_resources_SOURCES = check-CER-resources.c
+check_CER_resources_CPPFLAGS = -DASN_CER_MAX_ENCODED_SIZE=4096u
+check_CER_resources_LDADD = $(LDADD)
+check_CER_work_SOURCES = check-CER-resources.c
+check_CER_work_CPPFLAGS = \
+    -DASN_CER_TEST_WORK_LIMIT=1 \
+    -DASN_CER_MAX_ENCODED_SIZE=4096u \
+    -DASN_CER_MAX_SCRATCH_SIZE=4096u \
+    -DASN_CER_MAX_WORK_ITEMS=0u
+check_CER_work_LDADD = $(LDADD)
+check_CER_scratch_SOURCES = check-CER-resources.c
+check_CER_scratch_CPPFLAGS = \
+    -DASN_CER_TEST_SCRATCH_LIMIT=1 \
+    -DASN_CER_MAX_ENCODED_SIZE=4096u \
+    -DASN_CER_MAX_SCRATCH_SIZE=63u \
+    -DASN_CER_MAX_WORK_ITEMS=1024u
+check_CER_scratch_LDADD = $(LDADD)
+
+#Filter out the coverage options from CFLAGS as we don't need
+#code coverage data for the tests executables
+CFLAGS = $(filter-out $(CODE_COVERAGE_CFLAGS), @CFLAGS@) \
+    -I$(top_srcdir)/skeletons $(TESTSUITE_CFLAGS)
+LDADD = -lm $(top_builddir)/skeletons/libasn1cskeletons.la
+
+check_BER_NativeInteger_uint64_LDADD = $(LDADD)
+
+# Enable XER_ALLOW_EMPTY_OPTIONALS for the empty optionals test
+check_XER_empty_optionals_CFLAGS = -DXER_ALLOW_EMPTY_OPTIONALS $(CFLAGS)
+
+TESTS = $(check_PROGRAMS)
+TESTS_ENVIRONMENT=                      \
+    abs_top_srcdir=${abs_top_srcdir}    \
+    abs_top_builddir=${abs_top_builddir} \
+    srcdir=${srcdir}                    \
+    @ASAN_ENV_FLAGS@                    \
+    UBSAN_OPTIONS=print_stacktrace=1    \
+    ${srcdir}/disable-leak-check-m32.sh
+
+EXTRA_DIST = disable-leak-check-m32.sh
