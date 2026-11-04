@@ -1,0 +1,266 @@
+2026-10-29T06:59:51.077884Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-10-29T06:59:51.079057Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-10-29T06:59:51.253807Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 11520
+2026-10-29T06:59:51.253885Z 0 [ERROR] [MY-010338] [Server] Can't find error-message file '/home/ubuntu/openairinterface5g/ext/mysql/share/mysql/english/errmsg.sys'. Check error-message file location and 'lc-messages-dir' configuration directive.
+2026-10-29T06:59:51.269869Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-10-29T06:59:51.980126Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-10-29T06:59:52.452427Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-10-29T06:59:52.452496Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-10-29T06:59:52.503236Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-10-29T07:23:37.270113Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.11-0ubuntu0.26.04.1).
+2026-10-29T07:23:38.212762Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-10-29T07:23:38.212817Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-10-29T07:24:43.070507Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-10-29T07:24:43.074047Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-10-29T07:24:43.257640Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 123546
+2026-10-29T07:24:43.274409Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-10-29T07:24:43.738750Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-10-29T07:24:44.167288Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-10-29T07:24:44.167363Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-10-29T07:24:44.217998Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T02:19:12.835672Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T02:19:12.838083Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T02:19:13.021041Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 3140
+2026-11-04T02:19:13.059247Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T02:19:13.829854Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T02:19:14.140399Z 0 [System] [MY-010229] [Server] Starting XA crash recovery...
+2026-11-04T02:19:14.156900Z 0 [System] [MY-010232] [Server] XA crash recovery finished.
+2026-11-04T02:19:14.256159Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T02:19:14.256228Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T02:19:14.308085Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T06:47:06.270860Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.11-0ubuntu0.26.04.1).
+2026-11-04T06:47:07.706932Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T06:47:07.706992Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T07:14:51.518008Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T07:14:51.519069Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T07:14:51.693182Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 6058
+2026-11-04T07:14:51.707753Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T07:14:52.160981Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T07:14:52.595227Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T07:14:52.595303Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T07:14:52.646903Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T07:20:34.171768Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.11-0ubuntu0.26.04.1).
+2026-11-04T07:20:34.927620Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T07:20:34.927712Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T07:20:59.863711Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T07:20:59.864055Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T07:21:00.039903Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 6796
+2026-11-04T07:21:00.056822Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T07:21:00.536754Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T07:21:00.956499Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T07:21:00.956575Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T07:21:01.006690Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T07:23:12.138883Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.11-0ubuntu0.26.04.1).
+2026-11-04T07:23:13.231205Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T07:23:13.231275Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T07:23:37.157727Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T07:23:37.160062Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T07:23:37.335166Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 7249
+2026-11-04T07:23:37.352123Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T07:23:37.825198Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T07:23:38.256031Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T07:23:38.256103Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T07:23:38.307306Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T07:29:18.997675Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.11-0ubuntu0.26.04.1).
+2026-11-04T07:29:19.559241Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T07:29:19.559301Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T07:30:48.274613Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T07:30:48.275059Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T07:30:48.450239Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 7796
+2026-11-04T07:30:48.465641Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T07:30:48.932422Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T07:30:49.354047Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T07:30:49.354119Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T07:30:49.403542Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T07:38:49.469018Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T07:38:49.471083Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T07:38:49.653781Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 3441
+mysqld: File './binlog.index' not found (OS errno 13 - Permission denied)
+2026-11-04T07:38:49.668855Z 0 [ERROR] [MY-010119] [Server] Aborting
+2026-11-04T07:38:49.671113Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T07:38:49.671169Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T07:40:35.745802Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T07:40:35.752053Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T07:40:35.928557Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 3779
+mysqld: File './binlog.index' not found (OS errno 13 - Permission denied)
+2026-11-04T07:40:35.934724Z 0 [ERROR] [MY-010119] [Server] Aborting
+2026-11-04T07:40:35.936557Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T07:40:35.936614Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T07:43:22.816969Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T07:43:22.820066Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T07:43:23.003607Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 2912
+mysqld: File './binlog.index' not found (OS errno 13 - Permission denied)
+2026-11-04T07:43:23.018050Z 0 [ERROR] [MY-010119] [Server] Aborting
+2026-11-04T07:43:23.020233Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T07:43:23.020269Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T07:46:20.378740Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T07:46:20.380064Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T07:46:20.554007Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 3424
+2026-11-04T07:46:20.578079Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T07:46:21.341201Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T07:46:21.652796Z 0 [System] [MY-010229] [Server] Starting XA crash recovery...
+2026-11-04T07:46:21.669226Z 0 [System] [MY-010232] [Server] XA crash recovery finished.
+2026-11-04T07:46:21.765420Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T07:46:21.765494Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T07:46:21.768787Z 0 [ERROR] [MY-010274] [Server] Could not open unix socket lock file /home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock.lock.
+2026-11-04T07:46:21.768820Z 0 [ERROR] [MY-010268] [Server] Unable to setup unix socket lock file.
+2026-11-04T07:46:21.768841Z 0 [ERROR] [MY-010119] [Server] Aborting
+2026-11-04T07:46:23.396989Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T07:46:23.397060Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T07:47:08.919385Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T07:47:08.922050Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T07:47:09.095366Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 3704
+2026-11-04T07:47:09.112507Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T07:47:09.569470Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T07:47:09.997723Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T07:47:09.997795Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T07:47:10.046982Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T07:48:54.143152Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.11-0ubuntu0.26.04.1).
+2026-11-04T07:48:55.420499Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T07:48:55.420572Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T07:49:01.950610Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T07:49:01.951060Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T07:49:02.125503Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 4254
+2026-11-04T07:49:02.142602Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T07:49:02.609447Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T07:49:03.031612Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T07:49:03.031685Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T07:49:03.080726Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T07:52:33.366626Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.11-0ubuntu0.26.04.1).
+2026-11-04T07:52:34.327644Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T07:52:34.327715Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T08:26:20.017323Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T08:26:20.020067Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T08:26:20.203557Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 3064
+2026-11-04T08:26:20.237537Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T08:26:20.725658Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T08:26:21.174080Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T08:26:21.174156Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T08:26:21.225934Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T08:27:46.790695Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.11-0ubuntu0.26.04.1).
+2026-11-04T08:27:47.589363Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T08:27:47.589426Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T08:27:56.543674Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T08:27:56.545058Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T08:27:56.719046Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 3680
+2026-11-04T08:27:56.732455Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T08:27:57.197819Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T08:27:57.620251Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T08:27:57.620327Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T08:27:57.669347Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T08:33:55.545499Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T08:33:55.546067Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T08:33:55.727901Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 2986
+2026-11-04T08:33:55.759349Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T08:33:56.527315Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T08:33:56.839074Z 0 [System] [MY-010229] [Server] Starting XA crash recovery...
+2026-11-04T08:33:56.855452Z 0 [System] [MY-010232] [Server] XA crash recovery finished.
+2026-11-04T08:33:56.951893Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T08:33:56.951967Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T08:33:57.004464Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T08:35:02.494523Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.11-0ubuntu0.26.04.1).
+2026-11-04T08:35:03.373136Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T08:35:03.373201Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T08:41:51.718753Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T08:41:51.719050Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T08:41:51.894192Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 3927
+mysqld: File './binlog.index' not found (OS errno 13 - Permission denied)
+2026-11-04T08:41:51.900176Z 0 [ERROR] [MY-010119] [Server] Aborting
+2026-11-04T08:41:51.901880Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T08:41:51.901939Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T08:44:22.059419Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T08:44:22.062046Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T08:44:22.236395Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 4393
+2026-11-04T08:44:22.254419Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T08:44:22.720566Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T08:44:23.146539Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T08:44:23.146615Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T08:44:23.197818Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T08:51:39.174649Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.11-0ubuntu0.26.04.1).
+2026-11-04T08:51:40.470605Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T08:51:40.470668Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T10:55:54.106402Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T10:55:54.107057Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T10:55:54.282568Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 7176
+2026-11-04T10:55:54.299811Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T10:55:54.756665Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T10:55:55.181092Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T10:55:55.181174Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T10:55:55.230739Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T11:03:48.550744Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.11-0ubuntu0.26.04.1).
+2026-11-04T11:03:49.521486Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T11:03:49.521554Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T11:13:37.079501Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T11:13:37.080048Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T11:13:37.254956Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 11498
+2026-11-04T11:13:37.272121Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T11:13:37.727600Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T11:13:38.152727Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T11:13:38.152800Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T11:13:38.204954Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T11:15:36.367785Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.11-0ubuntu0.26.04.1).
+2026-11-04T11:15:37.568249Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T11:15:37.568320Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T11:26:04.221733Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T11:26:04.222058Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T11:26:04.395817Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 12757
+2026-11-04T11:26:04.410817Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T11:26:04.874973Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T11:26:05.297583Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T11:26:05.297661Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T11:26:05.348000Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T11:40:52.822639Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.11-0ubuntu0.26.04.1).
+2026-11-04T11:40:53.702122Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T11:40:53.702203Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T11:40:56.953760Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T11:40:56.954049Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T11:40:57.130629Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 16657
+2026-11-04T11:40:57.147998Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T11:40:57.603877Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T11:40:58.028522Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T11:40:58.028593Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T11:40:58.077269Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T12:02:51.494653Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.11-0ubuntu0.26.04.1).
+2026-11-04T12:02:52.537563Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T12:02:52.537634Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T13:20:47.995610Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T13:20:47.997060Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T13:20:48.276359Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 62857
+2026-11-04T13:20:48.318448Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T13:20:49.067058Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T13:20:50.029009Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T13:20:50.029147Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T13:20:50.229890Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T13:52:49.307115Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.11-0ubuntu0.26.04.1).
+2026-11-04T13:52:50.435613Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T13:52:50.435683Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T13:52:51.433283Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T13:52:51.438053Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T13:52:51.620922Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 98331
+2026-11-04T13:52:51.638243Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T13:52:52.116713Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T13:52:52.543242Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T13:52:52.543317Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T13:52:52.593633Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T13:59:33.162690Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.11-0ubuntu0.26.04.1).
+2026-11-04T13:59:33.850831Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T13:59:33.850891Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T13:59:34.282515Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T13:59:34.283056Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T13:59:34.466877Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 99508
+2026-11-04T13:59:34.484095Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T13:59:34.951631Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T13:59:35.372077Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T13:59:35.372153Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T13:59:35.422412Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).
+2026-11-04T14:03:11.354807Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.11-0ubuntu0.26.04.1).
+2026-11-04T14:03:12.671914Z 0 [System] [MY-010910] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: Shutdown complete (mysqld 8.4.11-0ubuntu0.26.04.1)  (Ubuntu).
+2026-11-04T14:03:12.671977Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-11-04T14:03:13.484235Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-11-04T14:03:13.485059Z 0 [Warning] [MY-011037] [Server] The CYCLE timer is not available. WAIT events in the performance_schema will not be timed.
+2026-11-04T14:03:13.668453Z 0 [System] [MY-010116] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld (mysqld 8.4.11-0ubuntu0.26.04.1) starting as process 100700
+2026-11-04T14:03:13.685754Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-11-04T14:03:14.162876Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-11-04T14:03:14.594969Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-11-04T14:03:14.595046Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-11-04T14:03:14.645643Z 0 [System] [MY-010931] [Server] /home/ubuntu/openairinterface5g/ext/mysql/bin/mysqld: ready for connections. Version: '8.4.11-0ubuntu0.26.04.1'  socket: '/home/ubuntu/openairinterface5g/ext/mysql/run/mysqld.sock'  port: 3306  (Ubuntu).

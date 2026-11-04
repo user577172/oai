@@ -1,0 +1,18 @@
+# /run/systemd/transient/oai-k3-b210-gnb.service
+# This is a transient unit file, created programmatically via the systemd API. Do not edit.
+[Unit]
+Description=[systemd-run] /home/ubuntu/openairinterface5g/ext/b-reference-test/oai-b-rf-reference/nr-softmodem -O /home/ubuntu/openairinterface5g/ext/cn5gcorenetwork/run/gnb-b210.conf "--RUs.[0].sdr_addrs" serial=31EC606 --telnetsrv --thread-pool 3,4,5,6 "--L1s.[0].L1_rx_thread_core" 0 "--L1s.[0].L1_tx_thread_core" 1 "--RUs.[0].ru_thread_core" 2 --usrp-tx-thread-config 1 "--RUs.[0].sl_ahead" 6 --reorder-thread-disable 1 "--gNBs.[0].min_rxtxtime" 8 -q --log_config.global_log_options level,nocolor,time
+CollectMode=inactive-or-failed
+
+[Service]
+Restart=no
+KillMode=mixed
+TimeoutStopSec=15s
+LimitMEMLOCK=infinity
+LimitMEMLOCK=infinity
+Nice=-20
+CPUAffinity=0 1 2 3 4 5 6
+Type=exec
+Environment="LD_LIBRARY_PATH=/home/ubuntu/openairinterface5g/ext/b-reference-test/oai-b-rf-reference"
+ExecStart=
+ExecStart="/home/ubuntu/openairinterface5g/ext/b-reference-test/oai-b-rf-reference/nr-softmodem" "-O" "/home/ubuntu/openairinterface5g/ext/cn5gcorenetwork/run/gnb-b210.conf" "--RUs.[0].sdr_addrs" "serial=31EC606" "--telnetsrv" "--thread-pool" "3,4,5,6" "--L1s.[0].L1_rx_thread_core" "0" "--L1s.[0].L1_tx_thread_core" "1" "--RUs.[0].ru_thread_core" "2" "--usrp-tx-thread-config" "1" "--RUs.[0].sl_ahead" "6" "--reorder-thread-disable" "1" "--gNBs.[0].min_rxtxtime" "8" "-q" "--log_config.global_log_options" "level,nocolor,time"

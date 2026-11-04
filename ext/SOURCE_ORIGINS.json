@@ -1,0 +1,20 @@
+[
+  {
+    "path": "ext/asn1c/source",
+    "upstream": "https://github.com/mouse07410/asn1c.git",
+    "revision": "29e5e97ef421edef2eda29c25c73f5245a74953d",
+    "local_changes_included": false
+  },
+  {
+    "path": "ext/asn1c/source-oai-pinned",
+    "upstream": "https://github.com/mouse07410/asn1c.git",
+    "revision": "940dd5fa9f3917913fd487b13dfddfacd0ded06e",
+    "local_changes_included": true
+  },
+  {
+    "path": "ext/simde/source",
+    "upstream": "https://github.com/simd-everywhere/simde-no-tests.git",
+    "revision": "1c68d9ad60bf63f3fb527c4ee3b2319d828ffcc6",
+    "local_changes_included": false
+  }
+]

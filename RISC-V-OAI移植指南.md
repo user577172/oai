@@ -77,7 +77,7 @@ v、zve*、zv*
 相关文件：
 
 ```text
-scripts/run-a-no-v-gnb.sh
+scripts/ran-gnb.sh
 ```
 
 目标板少于8核时，必须修改以下参数：
@@ -348,7 +348,7 @@ sudo udevadm trigger
 当前文件：
 
 ```text
-scripts/run-a-no-v-gnb.sh
+scripts/ran-gnb.sh
 ```
 
 `tune_usb_irq()`原先按K3上的：
@@ -375,7 +375,7 @@ grep -iE 'xhci|usb' /proc/interrupts
 
 ```bash
 cd "$OAI_ROOT"
-./scripts/build-oai-native.sh
+./scripts/build-oai-no-v.sh
 ```
 
 脚本固定使用ext内：
@@ -405,7 +405,7 @@ Build complete
 如果目标CPU不支持`rv64gc_zba`：
 
 ```bash
-OAI_RISCV_ARCH=rv64gc ./scripts/build-oai-native.sh
+OAI_RISCV_ARCH=rv64gc ./scripts/build-oai-no-v.sh
 ```
 
 ---
@@ -439,13 +439,13 @@ N2/SCTP 38412: listening
 推荐统一入口：
 
 ```bash
-sudo ./ext/cn5gcorenetwork/scripts/run-a-no-v.sh start
+sudo ./scripts/ran-gnb.sh start
 ```
 
 出现旧会话、No Service或PDU冲突时：
 
 ```bash
-sudo ./ext/cn5gcorenetwork/scripts/run-a-no-v.sh recover
+sudo ./scripts/ran-gnb.sh recover
 ```
 
 查看日志：

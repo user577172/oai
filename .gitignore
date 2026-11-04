@@ -53,3 +53,5 @@ ext/asn1c/probe-*/
 # Local backup/sampling snapshots are not source inputs.
 *.pre-*
 *.bak-*
+!/scripts/build-oai-rvv.sh
+!/scripts/build-oai-no-v.sh

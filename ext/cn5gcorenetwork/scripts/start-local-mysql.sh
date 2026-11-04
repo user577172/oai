@@ -19,7 +19,10 @@ if ss -ltn 2>/dev/null | grep -qE '127\.0\.0\.1:3306[[:space:]]'; then
   exit 1
 fi
 mkdir -p "$MYSQL/run" "$MYSQL/logs"
-rm -f "$SOCKET" "$PID_FILE"
+RUN_GROUP="$(id -gn "$RUN_USER")"
+# A prior root-run mysqld can leave database files inaccessible to RUN_USER.
+find "$MYSQL/data" "$MYSQL/run" "$MYSQL/logs" -user root -exec chown -- "$RUN_USER:$RUN_GROUP" {} +
+rm -f "$SOCKET" "$SOCKET.lock" "$PID_FILE"
 nohup "$MYSQL/bin/mysqld" --no-defaults \
   --basedir="$MYSQL" --datadir="$MYSQL/data" --plugin-dir="$MYSQL/plugin" \
   --lc-messages-dir="$MYSQL/share" --user="$RUN_USER" \

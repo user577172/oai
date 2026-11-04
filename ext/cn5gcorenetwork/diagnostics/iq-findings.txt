@@ -1,0 +1,6 @@
+TX snapshot a-tx-frame1.iq: 153600 complex int16 samples, fs=15.36MHz, FFT512. PSS symbol2, start bin448, NID2=0, correlation 0.9999854084584915.
+SSS candidates [(0, 0.9999878773330683), (954, 0.13464306285284663), (358, 0.13460617489173898)]
+RX snapshot: no convincing PSS match; normal correlation 0.181697, conjugate 0.174999. RX snapshot alone cannot establish absent RF due snapshot/timing/antenna conditions.
+Wire conversion diagnostic: compiled unchanged A converter source with rv64gc_zba, matched native UHD sc16 -> sc16_item32_le for all 8 tested int16 lanes. Does not establish full runtime correctness.
+GDB: tx_count 1062655, queue count 0, last TX timestamp 61337 samples (~3.99ms) ahead of RX timestamp.
+GDB stops perturb real-time radio; restart after sampling.
