@@ -7,6 +7,7 @@
  */
 
 // [from gNB coding]
+#include "common/utils/phy_module_timing.h"
 #include "openair1/PHY/CODING/nrLDPC_decoder/nrLDPC_types.h"
 #include "openair1/PHY/CODING/nrLDPC_coding/nrLDPC_coding_interface.h"
 #include "openair1/PHY/CODING/coding_defs.h"
@@ -237,7 +238,9 @@ void nr_process_decode_segment_cuda(nrLDPC_TB_decoding_parameters_t *segs)
 
   LOG_D(NR_PHY, "decoder (llr %p): %d segments, Z %d, R %d \n", segs->llr, C, Z, segs->R);
 
+  uint64_t cuda_start = oai_phy_timing_start();
   int decodeIterations = LDPCdecoder_cuda(&decParams, p_llr_dev, segs->c, p_procTime, segs->abort_decode);
+  oai_phy_timing_stop(PHY_TIME_LDPC_CUDA, cuda_start);
   stop_meas(&segs->ts_ldpc_decode);
 
   if (decodeIterations <= segs->max_ldpc_iterations) {

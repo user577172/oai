@@ -191,7 +191,9 @@ int nr_dl_proportional_fair(const nr_dl_sched_params_t *params, nr_dl_candidate_
   nr_dl_candidate_t *order[MAX_MOBILES_PER_GNB];
   int n_active = 0;
   FOR_EACH_CANDIDATE(cand, candidates, n_candidates)
-  if (!cand->skipped)
+  if (!cand->skipped
+      && (cand->is_retx || params->cell->mini_frame_period <= 1
+          || params->frame % params->cell->mini_frame_period == 0))
     order[n_active++] = cand;
   qsort(order, n_active, sizeof(*order), compare_dl_pf_rb_ptrs);
 
@@ -240,6 +242,8 @@ int nr_dl_proportional_fair(const nr_dl_sched_params_t *params, nr_dl_candidate_
 
   /* BW is the same across all beams, just use beam 0 */
   int max_rbSize = params->n_rb_avail[0];
+  if (params->cell->mini_max_prb)
+    max_rbSize = min(max_rbSize, params->cell->mini_max_prb);
   DevAssert(max_rbSize >= min_rbSize);
   int n_remain_ue = params->max_num_ue - n_scheduled;
   // share RBs fairly between remaining allocatable UEs

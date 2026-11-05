@@ -9,6 +9,8 @@
 #define _GNU_SOURCE
 #undef MALLOC //there are two conflicting definitions, so we better make sure we don't use it at all
 
+#include <dlfcn.h>
+#include "common/utils/phy_module_timing.h"
 #include <fcntl.h> // for SEEK_SET
 #include <pthread.h> // for pthread_join
 #include <stdint.h>
@@ -407,6 +409,41 @@ static size_t dump_L1_meas_stats(PHY_VARS_gNB *gNB, RU_t *ru, char *output, size
   return output - begin;
 }
 
+static void log_phy_module_time(const char *name, phy_timing_module_t module, const char *backend)
+{
+  phy_timing_snapshot_t t = oai_phy_timing_snapshot(module);
+  if (t.calls == 0) {
+    LOG_I(NR_PHY, "[PHY_TIMING] module=\"%s\" backend=%s scope=process_cumulative status=idle calls=0 avg_us=NA max_us=NA\n",
+          name, backend);
+    return;
+  }
+  LOG_I(NR_PHY,
+        "[PHY_TIMING] module=\"%s\" backend=%s scope=process_cumulative calls=%llu avg_us=%.3f max_us=%.3f total_us=%.3f\n",
+        name, backend, (unsigned long long)t.calls,
+        t.total_ns / (1000.0 * t.calls), t.max_ns / 1000.0, t.total_ns / 1000.0);
+}
+
+static void log_phy_module_times(PHY_VARS_gNB *gNB)
+{
+  log_phy_module_time("DLSCH encoding", PHY_TIME_DLSCH_ENCODING, "configured_ldpc");
+  log_phy_module_time("UL segments decoding", PHY_TIME_UL_SEGMENTS_DECODING, "configured_ldpc");
+  log_phy_module_time("PUSCH channel estimation", PHY_TIME_PUSCH_CHANNEL_ESTIMATION, "classical");
+  log_phy_module_time("PUSCH symbol processing", PHY_TIME_PUSCH_SYMBOL_PROCESSING, "classical");
+  log_phy_module_time("symbol_dft (RX)", PHY_TIME_SYMBOL_DFT_RX, "dfts");
+  log_phy_module_time("PUSCH channel measurement", PHY_TIME_PUSCH_CHANNEL_MEASUREMENT, "classical");
+  log_phy_module_time("PUSCH LLR computation", PHY_TIME_PUSCH_LLR_COMPUTATION, "classical");
+  Dl_info decoder = {0};
+  bool cuda = dladdr((void *)gNB->nrLDPC_coding_interface.nrLDPC_coding_decoder, &decoder)
+              && decoder.dli_fname && strstr(decoder.dli_fname, "ldpc_cuda");
+  if (cuda)
+    log_phy_module_time("LDPC_CUDA", PHY_TIME_LDPC_CUDA, "gpu_host_elapsed");
+  else
+    LOG_I(NR_PHY, "[PHY_TIMING] module=\"LDPC_CUDA\" status=not_loaded calls=0 avg_us=NA max_us=NA\n");
+  LOG_I(NR_PHY, "[PHY_TIMING] module=\"neural demapper\" status=not_in_source calls=0 avg_us=NA max_us=NA\n");
+  log_phy_module_time("PUSCH inner-receiver/neural receiver", PHY_TIME_PUSCH_INNER_RECEIVER,
+                      "classical;neural_receiver=not_in_source");
+}
+
 #define SORTED_LIST_SIZE 2048
 void *nrL1_stats_thread(void *param) {
   PHY_VARS_gNB     *gNB      = (PHY_VARS_gNB *)param;
@@ -425,6 +462,7 @@ void *nrL1_stats_thread(void *param) {
   }
 
   nrL1_stats_reset(gNB, ru);
+  unsigned timing_seconds = 0;
 
   while (!oai_exit) {
     sleep(1);
@@ -435,6 +473,8 @@ void *nrL1_stats_thread(void *param) {
     dump_nr_I0_stats(fd,gNB);
     dump_pdsch_stats(fd,gNB);
     dump_pusch_stats(fd,gNB);
+    if (cpu_meas_enabled && ++timing_seconds % 5 == 0)
+      log_phy_module_times(gNB);
     dump_L1_meas_stats(gNB, ru, output, L1STATSSTRLEN);
     fprintf(fd,"%s\n",output);
     fflush(fd);
@@ -487,7 +527,8 @@ void term_gNB_Tpool(int inst) {
   abortNotifiedFIFO(&gNB->L1_rx_out);
 
   gNB_L1_proc_t *proc = &gNB->proc;
-  pthread_join(proc->L1_stats_thread, NULL);
+  if (!IS_SOFTMODEM_NOSTATS)
+    pthread_join(proc->L1_stats_thread, NULL);
 }
 
 /// eNB kept in function name for nffapi calls, TO FIX

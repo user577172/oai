@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+export K3_OAI_BUILD="$ROOT/cmake_targets/ran_build/rv64-no-v-release"
+export K3_GNB_TEMPLATE="$ROOT/ext/cn5gcorenetwork/config/gnb-a-no-v.conf"
+export K3_RF_ENV_FILE="$ROOT/ext/cn5gcorenetwork/config/rf.env"
+unset LD_LIBRARY_PATH
+
+CORE_SCRIPTS="$ROOT/ext/cn5gcorenetwork/scripts"
+GNB_SCRIPT="$ROOT/scripts/run-a-no-v-gnb.sh"
+
+case "${1:-}" in
+  start)
+    if ! ip -4 addr show cn5g-gnb 2>/dev/null | grep -q 192.168.71.140; then
+      sudo "$CORE_SCRIPTS/start-cn5g.sh"
+    fi
+    exec "$GNB_SCRIPT" start
+    ;;
+  restart)
+    # A gNB-only restart can leave the AMF/SMF PDU-session state out of sync
+    # with the new RRC context.  Restart the complete local 5G stack so the UE
+    # can perform a clean Registration and PDU Session Establishment.
+    sudo "$GNB_SCRIPT" stop || true
+    sudo "$CORE_SCRIPTS/stop-cn5g.sh"
+    sleep 2
+    sudo "$CORE_SCRIPTS/start-cn5g.sh"
+    # On this A-board/B210 combination the first RF start after a full stack
+    # stop is occasionally visible to UHD but not acquired reliably by the
+    # RM520N.  A short warm RF restart has proved deterministic in repeated
+    # tests and does not recreate stale core sessions because the UE has not
+    # attached yet.
+    sudo "$GNB_SCRIPT" start
+    sleep "${K3_GNB_WARMUP_SECONDS:-8}"
+    sudo "$GNB_SCRIPT" stop
+    sleep 3
+    exec "$GNB_SCRIPT" start
+    ;;
+  stop-all)
+    sudo "$GNB_SCRIPT" stop || true
+    exec sudo "$CORE_SCRIPTS/stop-cn5g.sh"
+    ;;
+  stop|status|log|check)
+    exec "$GNB_SCRIPT" "$1"
+    ;;
+  *)
+    echo "Usage: $0 {start|restart|stop|stop-all|status|log|check}" >&2
+    exit 2
+    ;;
+esac

@@ -1738,7 +1738,7 @@ void RCconfig_nr_macrlc(configmodule_interface_t *cfg, nr_cell_sched_t **out_cel
       }
       cell->ulsch_max_frame_inactivity = *gpd(params, np, MACRLC_ULSCH_MAX_FRAME_INACTIVITY)->uptr;
       nrmac->stats_max_ue = *gpd(params, np, MACRLC_STATS_MAX_UE)->iptr;
-      nrmac->print_ue_stats = nrmac->stats_max_ue > 0;
+      nrmac->print_ue_stats = !IS_SOFTMODEM_NOSTATS && nrmac->stats_max_ue > 0;
       NR_bler_options_t *dl_bler_options = &cell->dl_bler;
       dl_bler_options->upper = *gpd(params, np, MACRLC_DL_BLER_TARGET_UPPER)->dblptr;
       dl_bler_options->lower = *gpd(params, np, MACRLC_DL_BLER_TARGET_LOWER)->dblptr;
@@ -1758,6 +1758,17 @@ void RCconfig_nr_macrlc(configmodule_interface_t *cfg, nr_cell_sched_t **out_cel
       else
         ul_bler_options->harq_round_max = *gpd(params, np, MACRLC_UL_HARQ_ROUND_MAX)->u8ptr;
       cell->min_grant_prb = *gpd(params, np, MACRLC_MIN_GRANT_PRB)->u16ptr;
+      cell->mini_max_prb = *gpd(params, np, MACRLC_MINI_MAX_PRB)->u16ptr;
+      cell->mini_frame_period = *gpd(params, np, MACRLC_MINI_FRAME_PERIOD)->u16ptr;
+      AssertFatal(cell->mini_max_prb == 0 || (cell->mini_max_prb >= 5 && cell->mini_max_prb <= 275),
+                  "mini_max_prb must be 0 or 5..275\n");
+      AssertFatal(cell->mini_frame_period >= 1 && cell->mini_frame_period <= 1024,
+                  "mini_frame_period must be 1..1024\n");
+      AssertFatal(cell->mini_max_prb == 0 || cell->min_grant_prb <= cell->mini_max_prb,
+                  "min_grant_prb exceeds mini_max_prb\n");
+      LOG_I(NR_MAC, "[MINI_LOAD] max_new_tb_prb=%u new_tb_frame_period=%u (RA/HARQ unchanged)\n",
+            cell->mini_max_prb, cell->mini_frame_period);
+
       long sc_fdma = NR_PUSCH_Config__transformPrecoder_enabled;
       NR_BWP_UplinkCommon_t *bwp = cell->common_channels.ServingCellConfigCommon->uplinkConfigCommon->initialUplinkBWP;
       if (bwp->rach_ConfigCommon->choice.setup->msg3_transformPrecoder != NULL)

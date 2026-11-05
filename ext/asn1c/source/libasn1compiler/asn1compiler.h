@@ -1,0 +1,243 @@
+#ifndef	ASN1_COMPILER_H
+#define	ASN1_COMPILER_H
+
+#include <asn1parser.h>
+#include <stdint.h>
+
+/*
+ * Policy for selecting the native C storage type of constrained ASN.1
+ * INTEGER values.  Controlled by the -finteger-native-type=<mode> option.
+ */
+typedef enum asn_integer_native_type_e {
+	AINT_NATIVE_AUTO = 0,	/* Preserve traditional long/INTEGER_t policy */
+	AINT_NATIVE_INT32,	/* Permit int32_t storage */
+	AINT_NATIVE_UINT32,	/* Permit uint32_t storage */
+	AINT_NATIVE_INT64,	/* Permit int64_t storage */
+	AINT_NATIVE_UINT64	/* Permit uint64_t storage */
+} asn_integer_native_type_e;
+
+/*
+ * Global selection of the integer native storage policy.
+ * Defaults to AINT_NATIVE_AUTO.  Set from the command line in asn1c.c
+ * before asn1_compile() is invoked, and consulted by the code generator.
+ */
+extern asn_integer_native_type_e asn1c_integer_native_type;
+
+/*
+ * Target C "long" model for generated native INTEGER storage.  AUTO keeps the
+ * historical portable assumption that generated code must fit a 32-bit long;
+ * explicit 32/64 modes are for reproducible cross-generation.
+ */
+typedef enum asn_target_long_size_e {
+	ASN_TARGET_LONG_AUTO = 0,
+	ASN_TARGET_LONG_32 = 32,
+	ASN_TARGET_LONG_64 = 64
+} asn_target_long_size_e;
+
+extern asn_target_long_size_e asn1c_target_long_size;
+
+enum asn1c_flags {
+	A1C_NOFLAGS,
+	/*
+	 * Debug the compiler.
+	 */
+	A1C_DEBUG		= 0x0001,
+	/*
+	 * Do not split the target output in several files, just print it.
+	 * (Note: the output is not likely to be compilable in this case).
+	 */
+	A1C_PRINT_COMPILED	= 0x0002,
+	/*
+	 * Generate only the tables for ASN.1 types,
+	 * do not emit ASN.1 parsing support code.
+	 */
+	A1C_OMIT_SUPPORT_CODE	= 0x0004,
+	/*
+	 * Use wide types by default (INTEGER_t etc) instead of native/long.
+	 */
+	A1C_USE_WIDE_TYPES	= 0x0008,
+	/*
+	 * Do not use C99 extensions.
+	 */
+	A1C_NO_C99		= 0x0010,
+	/*
+	 * Enable use of unnamed unions (non-portable feature).
+	 */
+	A1C_UNNAMED_UNIONS	= 0x0020,
+	/*
+	 * Don't make the asn1_DEF_'s of structure members "static".
+	 */
+	A1C_ALL_DEFS_GLOBAL	= 0x0040,
+	/*
+	 * Do not generate constraint checking code.
+	 */
+	A1C_NO_CONSTRAINTS	= 0x0080,
+	/*
+	 * Generate type_id_PR_member things identifiers of id_PR_member.
+	 */
+	A1C_COMPOUND_NAMES	= 0x0100,
+	/*
+	 * Do not generate courtesy #includes for external dependencies.
+	 */
+	A1C_NO_INCLUDE_DEPS	= 0x0200,
+	/*
+	 * Compile members of CHOICE as indirect pointers.
+	 */
+	A1C_INDIRECT_CHOICE	= 0x0400,
+	/*
+	 * -flink-skeletons
+	 * Symlink support files rather than copy them.
+	 */
+	A1C_LINK_SKELETONS	= 0x0800,
+
+	/*
+	 * -pdu={all|auto|Type}
+	 * Generate PDU table
+	 */
+	A1C_PDU_ALL			= 0x2000,
+	A1C_PDU_AUTO		= 0x4000,
+	A1C_PDU_TYPE		= 0x8000,
+	/*
+	 * -fincludes-quoted
+	 * Avoid generating #include <foo>, generate "foo" instead.
+	 */
+	A1C_INCLUDES_QUOTED	= 0x10000,
+	/*
+	 * -fline-refs
+	 * Include ASN.1 module's line numbers in comments.
+	 */
+	A1C_LINE_REFS       = 0x20000,
+	/*
+	 * -gen-OER / -no-gen-OER
+	 * Generate Octet Encoding Rules support code
+	 */
+	A1C_GEN_OER			= 0x40000,
+	/*
+	 * -gen-UPER / -no-gen-UPER
+	 * Generate Unaligned Packed Encoding Rules support code
+	 */
+	A1C_GEN_UPER			= 0x80000,
+	/*
+	 * -gen-example / -no-gen-example
+	 * Generate converter-example.c and converter-example.mk
+	 */
+	A1C_GEN_EXAMPLE			= 0x100000,
+	/*
+	 * Generate top-level configure.ac and Makefile.am
+	 */
+	A1C_GEN_AUTOTOOLS_EXAMPLE	= 0x200000,
+	/*
+	 * Print the source of generated lines.
+	 * -debug-output-origin-lines
+	 */
+	A1C_DEBUG_OUTPUT_ORIGIN_LINES = 0x400000,
+	/*
+	 * -gen-BER / -no-gen-BER
+	 * Generate Basic Encoding Rules support code
+	 */
+	A1C_GEN_BER			= 0x800000,
+	/*
+	 * -gen-XER / -no-gen-XER
+	 * Generate XML Encoding Rules support code
+	 */
+	A1C_GEN_XER			= 0x1000000,
+	/*
+	 * -gen-print / -no-gen-print
+	 * Generate print code
+	 */
+	A1C_GEN_PRINT			= 0x2000000,
+	/*
+	 * -gen-random-fill / -no-gen-random-fill
+	 * Generate random fill code
+	 */
+	A1C_GEN_RFILL			= 0x4000000,
+	/*
+	 * -gen-APER / -no-gen-APER
+	 * Generate Aligned Packed Encoding Rules support code
+	 */
+	A1C_GEN_APER			= 0x8000000,
+	/*
+	 * -gen-JER / -no-gen-JER
+	 * Generate JSON Encoding Rules support code
+	 */
+	A1C_GEN_JER                     = 0x100000000,
+	/*
+	 * -fgen-only-pdu-deps
+	 * Generate code only for PDU dependencies
+	 */
+	A1C_GEN_ONLY_PDU_DEPS           = 0x200000000,
+	/*
+	 * -flist-deps
+	 * List PDU dependencies without generating code
+	 */
+	A1C_LIST_DEPS                   = 0x400000000,
+	/*
+	 * -gen-CBOR / -no-gen-CBOR
+	 * Generate CBOR (Concise Binary Object Representation) support code
+	 */
+	A1C_GEN_CBOR                    = 0x800000000,
+	/*
+	 * -gen-CER / -no-gen-CER
+	 * Generate Canonical Encoding Rules support code
+	 */
+	A1C_GEN_CER                     = 0x1000000000,
+};
+
+/*
+ * Select the complete code-generation target while keeping C as the
+ * compatibility default.
+ */
+typedef enum asn1c_target_e {
+	ASN1C_TARGET_C = 0, /* Existing C backend. */
+	ASN1C_TARGET_RUST = 1 /* Safe Rust crate backend. */
+} asn1c_target_e;
+
+/*
+ * Target-specific options passed from the command-line driver to the
+ * compiler. Each member records one target-selection state variable.
+ */
+typedef struct asn1c_target_options_s {
+	asn1c_target_e target; /* Selected complete output target state variable. */
+	const char *rust_runtime_dir; /* Runtime source directory state variable. */
+	uint64_t rust_codecs; /* Requested Rust codec mask state variable. */
+} asn1c_target_options_t;
+
+/*
+ * Compile the ASN.1 specification.
+ */
+int asn1_compile(asn1p_t *asn, const char *datadir, const char *destdir, enum asn1c_flags,
+	int argc, int optc, char **argv, int complex_threshold);
+
+/*
+ * Compile a fixed ASN.1 tree for the selected complete target.
+ *
+ * Parameters:
+ *   asn               Fixed semantic tree.
+ *   datadir           C skeleton and standard-module asset directory.
+ *   destdir           Output directory, or empty for the target default.
+ *   flags             Existing compiler flags.
+ *   argc, optc, argv  Original command-line context for C generation.
+ *   complex_threshold Existing C layout threshold.
+ *   target_options    Target kind and target-specific options.
+ * Returns zero on success and a negative value on failure. It does not throw.
+ * Original source: new target dispatch around the existing compiler.
+ * Version/date: 0.1.0, 2026-10-11. Responsible party: asn1c maintainers.
+ * History: preserves asn1_compile() as the C compatibility entry point.
+ * Example: call with target_options.target = ASN1C_TARGET_RUST.
+ */
+int asn1_compile_with_target(asn1p_t *asn, const char *datadir,
+	const char *destdir, enum asn1c_flags flags, int argc, int optc,
+	char **argv, int complex_threshold,
+	const asn1c_target_options_t *target_options);
+
+void asn1c_debug_type_naming(asn1p_t *asn, enum asn1c_flags,
+                             char **asn_type_names);
+
+void asn1c__add_pdu_type(const char *typename);
+
+void asn1c_prefix_set(const char *prefix);
+const char* asn1c_prefix_get(void);
+
+int asn1c_attach_streams(asn1p_expr_t *expr);
+
+#endif	/* ASN1_COMPILER_H */

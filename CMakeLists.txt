@@ -207,8 +207,12 @@ elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
 elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "riscv64")
   set(OAI_RISCV_ARCH "rv64gc_zba" CACHE STRING "RISC-V ISA for native OAI builds")
   set(OAI_RISCV_ABI "lp64d" CACHE STRING "RISC-V ABI for native OAI builds")
-  if (OAI_RISCV_ARCH MATCHES "(^|[_+])v($|[0-9])|_zve|_zv[a-z]")
-    message(FATAL_ERROR "OAI_RISCV_ARCH must not enable the RISC-V Vector extension: ${OAI_RISCV_ARCH}")
+  option(OAI_ENABLE_RVV "Enable the XSAI RVV PHY backend" OFF)
+  if (OAI_RISCV_ARCH MATCHES "^rv64[^_]*v|_zve|_zv[a-z]" AND NOT OAI_ENABLE_RVV)
+    message(FATAL_ERROR "Set OAI_ENABLE_RVV=ON for a vector ISA; keep the no-V build separate")
+  endif()
+  if (OAI_ENABLE_RVV AND NOT OAI_RISCV_ARCH MATCHES "^rv64[^_]*v")
+    message(FATAL_ERROR "OAI_ENABLE_RVV requires a full vector ISA, for example rv64gcv_zba")
   endif()
   set(C_FLAGS_PROCESSOR "${C_FLAGS_PROCESSOR} -gdwarf-2 -march=${OAI_RISCV_ARCH} -mabi=${OAI_RISCV_ABI}")
 else()
@@ -1692,6 +1696,13 @@ add_library(minimal_lib
   ${OPENAIR_DIR}/common/utils/minimal_stub.c
   )
 target_link_libraries(minimal_lib PUBLIC pthread dl ${T_LIB} LOG)
+
+add_executable(phy_module_timing_test
+  common/utils/tests/test_phy_module_timing.c
+  common/utils/phy_module_timing.c)
+target_link_libraries(phy_module_timing_test PRIVATE pthread)
+add_test(NAME utils.phy_module_timing COMMAND phy_module_timing_test)
+
 
 add_executable(measurement_display
   ${OPENAIR_DIR}/common/utils/threadPool/measurement_display.c)

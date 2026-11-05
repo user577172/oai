@@ -69,3 +69,16 @@ add_library(PHY_TOOLS
   oai_arith_operations.c
 )
 target_link_libraries(PHY_TOOLS PRIVATE shlib_loader)
+
+if(OAI_ENABLE_RVV)
+  add_executable(ofdm_idle_test tests/test_ofdm_idle.c ../MODULATION/PHY_ofdm_mod.c dfts_load.c)
+  target_link_libraries(ofdm_idle_test PRIVATE minimal_lib shlib_loader SIMU m)
+  add_dependencies(ofdm_idle_test dfts)
+  add_test(NAME rvv.ofdm_idle COMMAND ofdm_idle_test)
+  set_tests_properties(rvv.ofdm_idle PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}")
+  add_executable(rvv_dft_test tests/test_rvv_dfts.c dfts_load.c)
+  target_link_libraries(rvv_dft_test PRIVATE minimal_lib shlib_loader SIMU m)
+  add_dependencies(rvv_dft_test dfts)
+  add_test(NAME rvv.dft COMMAND rvv_dft_test)
+  set_tests_properties(rvv.dft PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}")
+endif()

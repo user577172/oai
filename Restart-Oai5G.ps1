@@ -47,7 +47,7 @@ Invoke-At -Commands @('AT+CFUN=0') -DelayMilliseconds 3000
 
 Write-Host '2/5 Restart the complete A-board core/gNB stack...'
 & ssh -o BatchMode=yes -o ConnectTimeout=8 $Board `
-    'sudo /home/ubuntu/openairinterface5g/ext/cn5gcorenetwork/scripts/run-a-no-v.sh restart'
+    'sudo /home/ubuntu/openairinterface5g/scripts/ran-gnb.sh restart'
 if ($LASTEXITCODE -ne 0) { throw "A-board restart failed: exit $LASTEXITCODE" }
 
 Write-Host '3/5 Restore NR5G-only/n78 and bring the modem online...'
@@ -60,7 +60,7 @@ Invoke-At -Commands @(
 Write-Host '4/5 Warm-restart B210 while RM520N is actively searching...'
 Start-Sleep -Seconds 8
 & ssh -o BatchMode=yes -o ConnectTimeout=8 $Board `
-    'sudo /home/ubuntu/openairinterface5g/scripts/run-a-no-v-gnb.sh stop; sleep 3; sudo /home/ubuntu/openairinterface5g/scripts/run-a-no-v-gnb.sh start'
+    'sudo /home/ubuntu/openairinterface5g/scripts/ran-gnb.sh stop; sleep 3; sudo /home/ubuntu/openairinterface5g/scripts/ran-gnb.sh start'
 if ($LASTEXITCODE -ne 0) { throw "B210 warm restart failed: exit $LASTEXITCODE" }
 
 Write-Host '5/5 Wait for Windows MBIM registration and data connection...'

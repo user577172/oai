@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: LicenseRef-CSSL-1.0
  */
 
+#include "common/utils/phy_module_timing.h"
 #include "PHY/defs_gNB.h"
 #include "PHY/phy_extern.h"
 #include "nfapi_nr_interface_scf.h"
@@ -248,6 +249,7 @@ static void inner_rx(PHY_VARS_gNB *gNB,
   }
   if (nb_layer == 2) {
     if (rel15_ul->qam_mod_order <= 6) {
+      uint64_t llr_start = oai_phy_timing_start();
       nr_compute_ML_llr((c16_t *)&pusch_vars->rxdataF_comp[0][symbol * buffer_length],
                         (c16_t *)&pusch_vars->rxdataF_comp[1][symbol * buffer_length],
                         rxF_ch_maga[0],
@@ -258,6 +260,7 @@ static void inner_rx(PHY_VARS_gNB *gNB,
                         rho[1][0],
                         pusch_vars->ul_valid_re_per_slot[symbol],
                         rel15_ul->qam_mod_order);
+      oai_phy_timing_stop(PHY_TIME_PUSCH_LLR_COMPUTATION, llr_start);
     }
     else {
       nr_mmse_2layers(pusch_vars->rxdataF_comp,
@@ -278,8 +281,9 @@ static void inner_rx(PHY_VARS_gNB *gNB,
     }
   }
   if (nb_layer != 2 || rel15_ul->qam_mod_order > 6)
-    for (int aatx = 0; aatx < nb_layer; aatx++)
-           nr_compute_llr(&pusch_vars->rxdataF_comp[aatx][symbol * buffer_length],
+    for (int aatx = 0; aatx < nb_layer; aatx++) {
+      uint64_t llr_start = oai_phy_timing_start();
+      nr_compute_llr(&pusch_vars->rxdataF_comp[aatx][symbol * buffer_length],
                      rxF_ch_maga[aatx],
                      rxF_ch_magb[aatx],
                      rxF_ch_magc[aatx],
@@ -287,6 +291,8 @@ static void inner_rx(PHY_VARS_gNB *gNB,
                      pusch_vars->ul_valid_re_per_slot[symbol],
                      symbol,
                      rel15_ul->qam_mod_order);
+      oai_phy_timing_stop(PHY_TIME_PUSCH_LLR_COMPUTATION, llr_start);
+    }
 }
 
 typedef struct {
@@ -866,6 +872,7 @@ int nr_rx_pusch_group_tp(PHY_VARS_gNB *gNB,
   //------------------- Channel estimation -------------------
   //----------------------------------------------------------
   start_meas(&gNB->ulsch_channel_estimation_stats);
+  uint64_t estimation_start = oai_phy_timing_start();
   int max_ch = 0;
   uint32_t nvar = 0;
   int end_symbol = rel15_ul_ref->start_symbol_index + rel15_ul_ref->nr_of_symbols;
@@ -951,6 +958,9 @@ int nr_rx_pusch_group_tp(PHY_VARS_gNB *gNB,
                              num_sp_streams);
   }
 
+  oai_phy_timing_stop(PHY_TIME_PUSCH_CHANNEL_ESTIMATION, estimation_start);
+  uint64_t measurement_start = oai_phy_timing_start();
+
   // ULSCH signal and noise power measurements
   // This is same for all the UEs in the group
   allocCast2D(n0_subband_power,
@@ -988,6 +998,7 @@ int nr_rx_pusch_group_tp(PHY_VARS_gNB *gNB,
           joint_pv->ulsch_power[aa_pusch],
           joint_pv->ulsch_noise_power[aa_pusch]);
   }
+  oai_phy_timing_stop(PHY_TIME_PUSCH_CHANNEL_MEASUREMENT, measurement_start);
   stop_meas(&gNB->ulsch_channel_estimation_stats);
 
   start_meas(&gNB->rx_pusch_init_stats);
@@ -1111,6 +1122,7 @@ int nr_rx_pusch_group_tp(PHY_VARS_gNB *gNB,
   }
   stop_meas(&gNB->rx_pusch_init_stats);
 
+  uint64_t symbols_start = oai_phy_timing_start();
   start_meas(&gNB->rx_pusch_symbol_processing_stats);
   int numSymbols = gNB->num_pusch_symbols_per_thread;
   int total_res = 0;
@@ -1230,6 +1242,7 @@ int nr_rx_pusch_group_tp(PHY_VARS_gNB *gNB,
     }
   }
   stop_meas(&gNB->rx_pusch_symbol_processing_stats);
+  oai_phy_timing_stop(PHY_TIME_PUSCH_SYMBOL_PROCESSING, symbols_start);
 
   // Copy the data to the scope. This cannot be performed in one call to gNBscopeCopy because the data is not contiguous in the
   // buffer due to reference symbol extraction and padding. The gNBscopeCopy call is broken up into steps: trylock, copy, unlock.

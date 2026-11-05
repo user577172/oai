@@ -1,0 +1,64 @@
+K3 riscv-mini-run
+================
+Purpose: minimize optional work for physical n78 UE access; keep the standard
+broadcast, PRACH/RAR, PDCCH/PDSCH/PUSCH/PUCCH, channel estimation, LDPC,
+RRC/security/NAS forwarding and local 5G core. No UE persistent setting changes.
+
+Build offline (RVV): scripts/build-oai-rvv.sh
+The default targets build the gNB and its runtime libraries only. The build
+explicitly disables T tracer, scopes, E2/E3, CUDA LDPC, telnet and web server.
+Except T tracer, these optional backends were already OFF in the prior build;
+there is no measured saving claimed from disabling them again.
+
+Run: K3_GNB_CORES=1 scripts/ran-gnb.sh start (experimental; RF test failed)
+     K3_GNB_CORES=2 scripts/ran-gnb.sh start (default)
+     K3_GNB_CORES=3 scripts/ran-gnb.sh start
+     K3_GNB_CORES=multi scripts/ran-gnb.sh start (positive control)
+Stop before selecting a different core profile. restart/recover also restart
+the local core. The gNB log is overwritten on every successful start; save it.
+The 2 profile confines every gNB thread to CPUs 2,3, USB IRQ to 3, and core
+workers to 0,1,4-7. The 3 profile uses 2,3,4, USB IRQ 2 and core 0,1,5-7.
+Both CPUAffinity and systemd AllowedCPUs are applied; source thread bindings
+cannot escape the cpuset. RU and L1 worker pools are configured consistently.
+The default multi profile allows CPUs 1-7, including USB CPU 6; it is
+a positive control, with the core sharing CPU 6 (and CPU 0).
+
+Runtime: --disable-stats, no -q, no L1/MAC stats threads, no periodic MAC
+statistics formatting, reduced PHY/HW/RLC/PDCP logs. RRC and NGAP events
+remain visible for validation. do_CSIRS=0 and do_SRS="none" are explicit
+(previous defaults were already disabled). Timing instrumentation inherited
+from ridcv-debug remains in source but collects nothing without -q. A stopped
+stats thread is joined only when it was created.
+
+PHY optimization: CYCLIC_PREFIX OFDM skips IDFT only when every frequency
+sample of a symbol is exactly zero. It clears the full corresponding output
+including the cyclic prefix, preserving IDFT(0)=0 even with stale TX buffers.
+Nonzero symbols use the original IDFT path. No change to SCS, 24 RB, sampling
+rate, frequency, TDD pattern, RF gains or security algorithms.
+
+Regression: rvv.ofdm_idle executes the production PHY_ofdm_mod function,
+compares against actual libdfts IDFT output with prefix insertion, and checks
+160 zero/mixed/nonzero cases (128..2048 FFT, short/long prefixes, aligned and
+unaligned output) plus output guard regions. Also run rvv.dft, timing unit,
+and representative nr_dlsim/nr_ulsim physim tests before RF validation.
+
+Acceptance: RRCSetupComplete proves UE-to-gNB RRC establishment; successful
+AMF registration and UE CGATT=1 prove core registration. Record these stages
+separately from PDU session/IP and ping. RF failure is not a passing test.
+Results/evidence: /home/ubuntu/rf-evidence-mini-run-20261105/README.txt
+
+Optional low-load experiment (2026-11-05)
+----------------------------------------
+MACRLC mini_max_prb=0 and mini_frame_period=1 preserve the default policy.
+For the single-core experiment, set mini_max_prb=8, mini_frame_period=4,
+min_grant_prb=1, ulsch_max_frame_inactivity=100, UL/DL max MCS=4 and L1
+max_ldpc_iterations=4. The cap/window affect UE-specific new grants only;
+RA and HARQ retransmission scheduling remain on their normal paths.
+The carrier stays 24 RB / 15.36 MSps. This does not reduce continuous USB I/O.
+K3_GNB_RUNTIME_SEC is an optional systemd RuntimeMaxSec limit (default infinity).
+A time limit only stops the gNB; the experiment separately scheduled a recovery
+service to restore the original two-core configuration.
+The low-load two-core control carried traffic; the single-core run failed
+before visible random access, with 571 RX overflows and CPU2 near 98.9% busy.
+Original two-core scheduling and LDPC8 were restored and ping passed 6/6.
+Full evidence: /home/ubuntu/rf-evidence-single-lowload-20261105/README.txt.
