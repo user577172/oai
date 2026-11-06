@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: LicenseRef-CSSL-1.0
  */
 
+#include "common/utils/phy_module_timing.h"
 #include "PHY/defs_gNB.h"
 #include "PHY/defs_nr_common.h"
 #include "modulation_UE.h"
@@ -162,7 +163,9 @@ int nr_symbol_fep_ul(const NR_DL_FRAME_PARMS *fp,
     rxdata_ptr = (int16_t *)&rxdata[rxdata_offset];
   }
 
+  uint64_t dft_start = oai_phy_timing_start();
   dft(dftsize, rxdata_ptr, (int16_t *)rxdataF, 1);
+  oai_phy_timing_stop(PHY_TIME_SYMBOL_DFT_RX, dft_start);
 
   return 0;
 }

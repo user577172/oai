@@ -49,6 +49,15 @@ void PHY_ofdm_mod(const int *input, /// pointer to complex input
 
     switch (etype) {
       case CYCLIC_PREFIX: {
+        // IDFT(0) and its cyclic prefix are zero; idle NR symbols need no transform.
+        uint32_t occupied = 0;
+        for (int k = 0; k < fftsize; ++k)
+          occupied |= (uint32_t)input[i * fftsize + k];
+        if (occupied == 0) {
+          memset(&output[i * (fftsize + nb_prefix_samples)], 0,
+                 (fftsize + nb_prefix_samples) * sizeof(*output));
+          break;
+        }
         int *output_ptr = &output[(i * fftsize) + ((1 + i) * nb_prefix_samples)];
 #if defined(__riscv_vector)
         if (fftsize == 2048) {

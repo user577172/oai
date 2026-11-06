@@ -289,7 +289,8 @@ int nr_ul_proportional_fair(const nr_ul_sched_params_t *params, nr_ul_candidate_
 {
   int n_scheduled = 0;
   const int min_rb = params->min_rb;
-  const int max_rbSize = params->n_rb_avail[0];
+  const int max_rbSize = params->cell->mini_max_prb ? min(params->n_rb_avail[0], params->cell->mini_max_prb)
+                                                      : params->n_rb_avail[0];
   DevAssert(max_rbSize >= min_rb);
 
   nr_ul_candidate_t *order[MAX_MOBILES_PER_GNB];
@@ -297,6 +298,10 @@ int nr_ul_proportional_fair(const nr_ul_sched_params_t *params, nr_ul_candidate_
   FOR_EACH_CANDIDATE(cand, candidates, n_candidates)
   {
     if (cand->skipped)
+      continue;
+    // Gate new grants only; HARQ preserves its original timing and transport block.
+    if (!cand->is_retx && params->cell->mini_frame_period > 1
+        && params->dci_frame % params->cell->mini_frame_period != 0)
       continue;
     order[n_active++] = cand;
   }

@@ -5,6 +5,17 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CORE="$ROOT/ext/cn5gcorenetwork"
 ENV_FILE="${K3_RF_ENV_FILE:-$CORE/config/rf.env}"
 BUILD="${K3_OAI_BUILD:-$ROOT/cmake_targets/ran_build/rv64-rvv-release}"
+# The cpuset includes all gNB threads; the USB IRQ stays inside the same set.
+CORES="${K3_GNB_CORES:-2}"
+case "$CORES" in
+  1) GNB_CPUS=2; POOL=2; RU_CORE=2; RX_CORE=2; TX_CORE=2; USB_CORE=2; CORE_CPUS=0,1,3-7 ;;
+  2) GNB_CPUS=2,3; POOL=2,3; RU_CORE=2; RX_CORE=3; TX_CORE=3; USB_CORE=3; CORE_CPUS=0,1,4-7 ;;
+  3) GNB_CPUS=2,3,4; POOL=3,4; RU_CORE=2; RX_CORE=3; TX_CORE=4; USB_CORE=2; CORE_CPUS=0,1,5-7 ;;
+  multi) GNB_CPUS=1-7; POOL=4,5,7; RU_CORE=2; RX_CORE=1; TX_CORE=3; USB_CORE=6; CORE_CPUS=0,6 ;;
+  *) printf "K3_GNB_CORES must be 1, 2, 3, or multi\n" >&2; exit 2 ;;
+esac
+RU_POOL="$POOL"
+[[ "$CORES" != multi ]] || RU_POOL=1,3,4,5,6
 GNB="$BUILD/nr-softmodem"
 TEMPLATE="${K3_GNB_TEMPLATE:-$CORE/config/gnb-a-rvv.conf}"
 RUNTIME="$CORE/run/gnb-b210.conf"
@@ -13,6 +24,7 @@ LOG_DIR="$ROOT/log"
 GNB_LOG="$LOG_DIR/gnb.log"
 die() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
 usage() {
+  printf 'K3_GNB_CORES=1|2|3|multi (default 2); mini profile disables statistics and tracing.\n'
   printf 'Usage: %s {check|start|recover|restart|status|log|stop|stop-all}\n' "$0"
   printf 'Set USRP_SERIAL in %s. start/restart/recover enable RF transmission.\n' "$ENV_FILE"
 }
@@ -88,6 +100,7 @@ write_config() {
     -e "s#(GNB_IPV4_ADDRESS_FOR_NG_AMF[[:space:]]*=[[:space:]]*)\"[^\"]+\"#\\1\"$GNB_N2_IP\"#" \
     -e "s#(GNB_IPV4_ADDRESS_FOR_NGU[[:space:]]*=[[:space:]]*)\"[^\"]+\"#\\1\"$GNB_N3_IP\"#" \
     "$RUNTIME"
+  sed -Ei "s/tp_cores[[:space:]]*=[[:space:]]*\[[^]]*\]/tp_cores = [$RU_POOL]/; s/num_tp_cores[[:space:]]*=[[:space:]]*[0-9]+/num_tp_cores = $(awk -F, '{print NF}' <<<"$RU_POOL")/" "$RUNTIME"
   grep -Fq "ipv4 = \"$AMF_IP\"" "$RUNTIME" || die "AMF address was not written into $RUNTIME"
 }
 tune_usb_irq() {
@@ -99,8 +112,8 @@ tune_usb_irq() {
   if [[ ! -e "$CORE/run/b210-usb-irq-affinity.prev" ]]; then
     printf '%s %s\n' "$irq" "$old" >"$CORE/run/b210-usb-irq-affinity.prev"
   fi
-  printf '6\n' | sudo tee "/proc/irq/$irq/smp_affinity_list" >/dev/null
-  printf 'B210 xHCI IRQ %s: CPU %s -> CPU 6\n' "$irq" "$old"
+  printf '%s\n' "$USB_CORE" | sudo tee "/proc/irq/$irq/smp_affinity_list" >/dev/null
+  printf 'B210 xHCI IRQ %s: CPU %s -> CPU %s\n' "$irq" "$old" "$USB_CORE"
 }
 restore_usb_irq() {
   local irq old
@@ -115,7 +128,7 @@ pin_core_workers() {
   local name pid
   for name in mysqld upf smf amf; do
     for pid in $(pgrep -x "$name" || true); do
-      sudo taskset -apc 0,6 "$pid" >/dev/null
+      sudo taskset -apc "$CORE_CPUS" "$pid" >/dev/null
     done
   done
 }
@@ -156,17 +169,17 @@ case "${1:-start}" in
     fi
     sudo systemctl stop "$UNIT" >/dev/null 2>&1 || true
     sudo systemctl reset-failed "$UNIT" >/dev/null 2>&1 || true
-    if ! sudo systemd-run --collect --unit="$UNIT" --service-type=exec --property=Restart=no \
+    if ! sudo systemd-run --collect --unit="$UNIT" --service-type=exec --property=Restart=no --property="RuntimeMaxSec=${K3_GNB_RUNTIME_SEC:-infinity}" \
       --property=KillMode=mixed --property=TimeoutStopSec=15 --property=LimitMEMLOCK=infinity \
       --property="StandardOutput=truncate:$GNB_LOG" --property=StandardError=inherit \
-      --property=Nice=-20 --property=CPUAffinity=1-5,7 --setenv="LD_LIBRARY_PATH=$BUILD${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" "$GNB" \
+      --property=Nice=-20 --property="CPUAffinity=$GNB_CPUS" --property="AllowedCPUs=$GNB_CPUS" --setenv="LD_LIBRARY_PATH=$BUILD${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" "$GNB" \
       -O "$RUNTIME" --RUs.[0].sdr_addrs "serial=$USRP_SERIAL" \
-      --thread-pool 4,5,7 \
-      --L1s.[0].L1_rx_thread_core 1 --L1s.[0].L1_tx_thread_core 3 \
-      --RUs.[0].ru_thread_core 2 --usrp-tx-thread-config 1 \
+      --thread-pool "$POOL" \
+      --L1s.[0].L1_rx_thread_core "$RX_CORE" --L1s.[0].L1_tx_thread_core "$TX_CORE" \
+      --RUs.[0].ru_thread_core "$RU_CORE" --usrp-tx-thread-config 1 \
       --RUs.[0].sl_ahead "$SL_AHEAD" \
       "${extra_args[@]}" \
-      --gNBs.[0].min_rxtxtime "$MIN_RXTXTIME" -q \
+      --gNBs.[0].min_rxtxtime "$MIN_RXTXTIME" --disable-stats \
       --log_config.global_log_options level,nocolor,time; then
       restore_usb_irq
       die "Unable to start gNB systemd unit"

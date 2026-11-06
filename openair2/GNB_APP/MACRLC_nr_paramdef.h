@@ -44,6 +44,8 @@
 #define MACRLC_UL_MAX_MCS                    "ul_max_mcs"
 #define MACRLC_DL_HARQ_ROUND_MAX             "dl_harq_round_max"
 #define MACRLC_UL_HARQ_ROUND_MAX             "ul_harq_round_max"
+#define MACRLC_MINI_MAX_PRB "mini_max_prb"
+#define MACRLC_MINI_FRAME_PERIOD "mini_frame_period"
 #define MACRLC_MIN_GRANT_PRB                 "min_grant_prb"
 #define MACRLC_IDENTITY_PM                   "identity_precoding_matrix"
 #define MACRLC_ANALOG_BEAMFORMING            "set_analog_beamforming"
@@ -110,6 +112,8 @@
   {MACRLC_UL_MAX_MCS,                  HLP_MACRLC_UL_MAX_MCS,    0, .u8ptr=NULL,  .defintval=28,              TYPE_UINT8,   0}, \
   {MACRLC_DL_HARQ_ROUND_MAX,           HLP_MACRLC_DL_HARQ_MAX,   0, .u8ptr=NULL,  .defintval=4,               TYPE_UINT8,   0}, \
   {MACRLC_UL_HARQ_ROUND_MAX,           HLP_MACRLC_UL_HARQ_MAX,   0, .u8ptr=NULL,  .defintval=4,               TYPE_UINT8,   0}, \
+  {MACRLC_MINI_MAX_PRB, "Experimental new-TB PRB cap (0 disables)", 0, .u16ptr=NULL, .defintval=0, TYPE_UINT16, 0}, \
+  {MACRLC_MINI_FRAME_PERIOD, "Experimental new-TB frame period (1 disables)", 0, .u16ptr=NULL, .defintval=1, TYPE_UINT16, 0}, \
   {MACRLC_MIN_GRANT_PRB,               HLP_MACRLC_MIN_GRANT_PRB, 0, .u16ptr=NULL, .defintval=5,               TYPE_UINT16,  0}, \
   {MACRLC_IDENTITY_PM,                 HLP_MACRLC_IDENTITY_PM,   PARAMFLAG_BOOL, .u8ptr=NULL, .defintval=0,   TYPE_UINT8,   0}, \
   {MACRLC_LOCAL_N_ADDRESS_F1U,         NULL,                     0, .strptr=NULL, .defstrval=NULL,            TYPE_STRING,  0}, \
@@ -157,6 +161,8 @@
   { .s2 = { config_check_intrange, {0, 31} } }, /* UL max MCS */ \
   { .s2 = { config_check_intrange, {1, 8} } }, /* DL max HARQ rounds */ \
   { .s2 = { config_check_intrange, {1, 8} } }, /* UL max HARQ rounds */ \
+  { .s2 = { config_check_intrange, {0, 275} } }, /* mini PRB cap */ \
+  { .s2 = { config_check_intrange, {1, 1024} } }, /* mini frame period */ \
   { .s5 = { NULL } }, \
   { .s2 = { NULL } }, \
   { .s5 = { NULL } }, \

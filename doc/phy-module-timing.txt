@@ -1,0 +1,52 @@
+PHY module timing on ridcv-debug
+
+Enable with the existing nr-softmodem -q option. scripts/ran-gnb.sh already
+passes -q. The L1 statistics thread writes ten [PHY_TIMING] rows to stdout
+every five seconds, so the normal service captures them in:
+  /home/ubuntu/openairinterface5g/log/gnb.log
+Filter with: grep '\[PHY_TIMING\]' log/gnb.log
+Without -q, the new collection points do not read the clock or update counters.
+
+Fields:
+  calls: cumulative completed measurements since process startup
+  avg_us: cumulative total_ns / calls / 1000
+  max_us: largest completed measurement / 1000
+  total_us: cumulative measured duration / 1000
+  scope=process_cumulative: combined across all gNB instances and workers
+All times use the monotonic clock in nanoseconds, converted to microseconds.
+They are elapsed time, including preemption and waits, not CPU-only time.
+Counter fields are atomic but a live multi-field snapshot is not transactional.
+No reporting thread resets a worker's counters. Collection has clock/atomic
+update overhead and should be considered debug instrumentation.
+
+Collection points and sample meaning:
+- DLSCH encoding: nr_dlsch.c, nr_dlsch_encoding call, one DL batch;
+  includes coding, rate matching and interleaving, excluding modulation/OFDM.
+- UL segments decoding: nr_ulsch_decoding.c imports each completed TB's
+  existing ts_ldpc_decode. CPU samples are decoder segment tasks and their
+  output handling. Parallel task times are summed, not a slot critical path.
+- PUSCH channel estimation: nr_ulsch_demodulation.c, channel estimation,
+  PTRS handling and time-domain interpolation/averaging, before power measures.
+- PUSCH symbol processing: task dispatch through join and result copy;
+  one PUSCH group. Includes queue/wait time and child LLR work.
+- symbol_dft (RX): slot_fep_nr.c, only the DFT call in nr_symbol_fep_ul;
+  one antenna/OFDM symbol. Excludes CP handling, copying and FFT shift.
+- PUSCH channel measurement: signal and noise power measurement loops;
+  one PUSCH group. Excludes channel estimation.
+- PUSCH LLR computation: nr_compute_llr or nr_compute_ML_llr calls;
+  one demapping call (single layer, or joint ML call), excluding MMSE setup.
+- LDPC_CUDA: the actual LDPCdecoder_cuda call in the CUDA/HIP host wrapper;
+  host elapsed time, including its internal stream synchronization, not
+  CUDA-event kernel-only time. CPU fallback work is not labelled CUDA.
+- neural demapper: not implemented in this checkout; status=not_in_source.
+- PUSCH inner-receiver/neural receiver: the classical nr_rx_pusch_group_tp
+  call; includes estimation, measurement, symbol processing and their waits.
+  neural_receiver=not_in_source explicitly distinguishes the absent backend.
+
+LDPC_CUDA reports not_loaded when the active coding plugin is not ldpc_cuda.
+An available collection point with no samples reports idle and avg/max=NA.
+Absent/inactive modules do not report an invented zero execution duration.
+The current K3 build has no CUDA backend, and cannot validate GPU execution.
+
+The modules are nested and have different sample units; their means, maxima
+or totals must not be added to estimate the slot processing latency.

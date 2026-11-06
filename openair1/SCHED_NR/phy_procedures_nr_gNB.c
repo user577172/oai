@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: LicenseRef-CSSL-1.0
  */
 
+#include "common/utils/phy_module_timing.h"
 #include "common/utils/fsn.h"
 #include "PHY/defs_gNB.h"
 #include "sched_nr.h"
@@ -1123,9 +1124,11 @@ static void handle_pusch_rx_group_trigger(PHY_VARS_gNB *gNB,
   dump_pusch_rx_data(gNB, pdu, slot, ue_idx);
 #endif
 
+  uint64_t receiver_start = oai_phy_timing_start();
   start_meas(&gNB->rx_pusch_stats);
   nr_rx_pusch_group_tp(gNB, pusch_vars_group, ulsch_pdu_group, ret_unav_res_group, group_size, frame, slot);
   stop_meas(&gNB->rx_pusch_stats);
+  oai_phy_timing_stop(PHY_TIME_PUSCH_INNER_RECEIVER, receiver_start);
 }
 
 static bool pusch_signal_detected(PHY_VARS_gNB *gNB, NR_gNB_PUSCH *pusch_vars, NR_gNB_ULSCH_t *ulsch)

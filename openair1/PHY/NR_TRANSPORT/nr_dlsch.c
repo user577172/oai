@@ -6,6 +6,7 @@
  * \brief Top-level routines for transmission of the PDSCH 38211 v 15.2.0
  */
 
+#include "common/utils/phy_module_timing.h"
 #include "nr_dlsch.h"
 #include "nr_dci.h"
 #include "nr_sch_dmrs.h"
@@ -1287,13 +1288,11 @@ void nr_generate_pdsch(PHY_VARS_gNB *gNB, int n_dlsch, NR_gNB_DLSCH_t *dlsch_arr
 
   int slot_type = nr_slot_select(&gNB->gNB_config, frame, slot);
   START_MEAS_FULL_SLOT(dlsch_encoding_stats, slot_type, NR_DOWNLINK_SLOT);
-  if (nr_dlsch_encoding(gNB,
-                        n_dlsch,
-                        dlsch_array,
-                        frame,
-                        slot,
-                        output)
-      == -1) {
+  uint64_t encoding_start = oai_phy_timing_start();
+  int encoding_ret = nr_dlsch_encoding(gNB, n_dlsch, dlsch_array, frame, slot, output);
+  oai_phy_timing_stop(PHY_TIME_DLSCH_ENCODING, encoding_start);
+  if (encoding_ret == -1) {
+    STOP_MEAS_FULL_SLOT(dlsch_encoding_stats, slot_type, NR_DOWNLINK_SLOT);
     return;
   }
   STOP_MEAS_FULL_SLOT(dlsch_encoding_stats, slot_type, NR_DOWNLINK_SLOT);

@@ -7,6 +7,7 @@
  */
 
 // [from gNB coding]
+#include "common/utils/phy_module_timing.h"
 #include "PHY/defs_gNB.h"
 #include "PHY/CODING/coding_extern.h"
 #include "PHY/CODING/coding_defs.h"
@@ -313,6 +314,9 @@ int nr_ulsch_decoding(PHY_VARS_gNB *phy_vars_gNB,
       LOG_D(PHY, "ULSCH %d in error\n", ULSCH_id);
 
     MERGE_MEAS_FULL_SLOT(&phy_vars_gNB->ts_ldpc_decode, &TB_parameters->ts_ldpc_decode, slot_type, NR_UPLINK_SLOT);
+    const time_stats_t *decoded = &TB_parameters->ts_ldpc_decode;
+    if (decoded->trials > 0 && decoded->diff >= 0)
+      oai_phy_timing_add(PHY_TIME_UL_SEGMENTS_DECODING, decoded->diff, decoded->trials, decoded->max);
 
     harq_process->harq_to_be_cleared = false;
   }

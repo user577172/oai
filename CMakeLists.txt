@@ -1697,6 +1697,13 @@ add_library(minimal_lib
   )
 target_link_libraries(minimal_lib PUBLIC pthread dl ${T_LIB} LOG)
 
+add_executable(phy_module_timing_test
+  common/utils/tests/test_phy_module_timing.c
+  common/utils/phy_module_timing.c)
+target_link_libraries(phy_module_timing_test PRIVATE pthread)
+add_test(NAME utils.phy_module_timing COMMAND phy_module_timing_test)
+
+
 add_executable(measurement_display
   ${OPENAIR_DIR}/common/utils/threadPool/measurement_display.c)
 target_link_libraries (measurement_display minimal_lib)

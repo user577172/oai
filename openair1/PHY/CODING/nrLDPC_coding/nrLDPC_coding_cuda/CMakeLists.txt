@@ -69,6 +69,8 @@ else()
 
 endif()
 
+# Standalone PHY test hosts need a local collector; the gNB exports its collector.
+target_sources(ldpc_cuda PRIVATE ${OPENAIR_DIR}/common/utils/phy_module_timing.c)
 target_link_libraries(ldpc_cuda PRIVATE log_headers)
 set_target_properties(ldpc_cuda PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 

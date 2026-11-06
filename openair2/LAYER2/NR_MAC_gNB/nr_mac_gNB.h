@@ -1311,6 +1311,8 @@ typedef struct nr_cell_sched_s {
 
   /// Minimum grant size in PRBs
   uint16_t min_grant_prb;
+  uint16_t mini_max_prb;
+  uint16_t mini_frame_period;
   /// Force identity precoding matrix (single-port or debug mode)
   bool identity_pm;
   /// Precoding matrix column counts per layer

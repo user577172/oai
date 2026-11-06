@@ -18,7 +18,11 @@ taskset -c "${OAI_BUILD_CPUS:-0-7}" "$TOOLCHAIN/bin/cmake" -S "$ROOT" -B "$BUILD
   -DASN1C_EXEC="$ROOT/ext/asn1c/install-oai-pinned/bin/asn1c" \
   -DOAI_RISCV_ARCH="$ARCH" -DOAI_RISCV_ABI=lp64d -DOAI_ENABLE_RVV=ON \
   -DOAI_USRP=ON -DENABLE_LDPC_CUDA=OFF -DAVX2=OFF -DAVX512=OFF \
+  -DT_TRACER=OFF -DT_TRACER_GUI=OFF -DE2_AGENT=OFF -DE3_AGENT=OFF \
+  -DENABLE_ENBSCOPE=OFF -DENABLE_NRSCOPE=OFF -DENABLE_UESCOPE=OFF \
+  -DENABLE_IMSCOPE=OFF -DENABLE_IMSCOPE_RECORD=OFF \
+  -DENABLE_TELNETSRV=OFF -DENABLE_WEBSRV=OFF \
   -DENABLE_PHYSIM_TESTS=ON -DFETCHCONTENT_FULLY_DISCONNECTED=ON \
   -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-if (( $# == 0 )); then set -- nr-softmodem nr-uesoftmodem params_libconfig oai_usrpdevif dfts ldpc ldpctest; fi
+if (( $# == 0 )); then set -- nr-softmodem params_libconfig oai_usrpdevif dfts ldpc; fi
 taskset -c "${OAI_BUILD_CPUS:-0-7}" "$TOOLCHAIN/bin/cmake" --build "$BUILD" --target "$@" -j "${OAI_BUILD_JOBS:-8}"
